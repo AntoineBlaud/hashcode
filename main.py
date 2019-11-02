@@ -1,45 +1,36 @@
+import os
+import sys
+import multiprocessing
+import threading
+from Input import Input
+from Stats import Stat
+from random import *
+from algo import Algo
+import json
 
+if __name__ == '__main__':
 
-#declare list 
-imageNumber = 0
-image_name = []
-image_number_tags = []
-image_tags = []
-image_type = []
+    # inputfile1 = Input("qualification_round_2019.in/b_lovely_landscapes.txt")
+    # array1 = inputfile1.fileToArray(removeItem={1}, ignoreLine={0}).array
 
-def getImages(filename):
-    f = open(filename,"r")
-    line_index = 1
-    for line in f:
+    # statarray1  = Stat(array1,2,removeItemIndepth2={0,1})
 
-        line = line.replace("\n", "")
-        image_name.append(line_index)
+    # r = Random()
+    # shuffle(array1)
+    # a1 = Algo(array1)
+    # a1.resolve()
 
-        if(line_index==1):
-            number = line[0]
-            imageNumber = int(number)
-        else:
-            word_index = 1
-            tmp_tags_list = []
-            for word in line.split(" "):
+    a = [["Brique 2"],["Brique 2",["Brique 3"]],"Brique 1",518181]
+    d = {"antoine0:":16, "maman":15};
+    b = "Hellp"
+    f = open("t.json","w")
+    json.dump({"tab":a,"valeur":b,"dic":d},f)
 
-                if(word_index == 1):
-                    image_type.append(word)
-
-                elif(word_index == 2):
-                    image_number_tags.append(word)
-
-                elif(word_index > 2):
-                    tmp_tags_list.append(word)
-                word_index+=1
-
-            image_tags.append(list(tmp_tags_list))
-
-        line_index +=1
+    
 
 
 
-getImages("a_example.txt")
-print("hllo")
+
+
 
 

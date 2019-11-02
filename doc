@@ -1,0 +1,22 @@
+Etape 1: FAIT
+    Lire le fichier et contruire un tableau de la forme:
+                [ID, FORM, nbtab, tab1, tag2, ....., tabn]
+
+Etape 1-Bis: FAIT
+    Faire statistique 
+
+Etape2: FAIT
+    Hasher le tableau et le mélanger
+
+Etape3: FAIT
+    Faire la classe python, mélanger puis couper en 2 le tableau
+
+Etape4:
+    Fournir le tableau au code C, faire l'algorithme glouton en classe
+
+Etape5:
+    Coder visualistion avancé, sauvegarde pour récupération et sauvegarde pour hashcode score, et score avancé
+
+Etape 6:
+    approche méta heuristique tenter d'améliorer
+

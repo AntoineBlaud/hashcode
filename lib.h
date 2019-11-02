@@ -1,0 +1,1 @@
+char **splitJsonVariable(char *filename)
