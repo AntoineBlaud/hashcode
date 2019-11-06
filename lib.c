@@ -107,7 +107,7 @@ void glouton(char *path, char *dataName)
     json_object_object_get_ex(parsed_json, dataName, &array);
     int arr_SIZE = json_object_array_length(array);
     clock_t update = clock() + T_PRINT * CLOCKS_PER_SEC;
-    for (int x = 0; x < arr_SIZE - 2; x = x + 2)
+    for (int x = 0; x < arr_SIZE - 2; x++)
     {
         if (clock() > update)
         {
@@ -138,7 +138,7 @@ void glouton(char *path, char *dataName)
                 }
             }
         }
-        struct json_object *tmp1 = copyStringArray(im1);
+        struct json_object *tmp1 = copyStringArray(json_object_array_get_idx(array, x + 1));
         struct json_object *tmp2 = copyStringArray(json_object_array_get_idx(array, BEST_CHOICE));
         json_object_array_put_idx(array, x + 1, tmp2);
         json_object_array_put_idx(array, BEST_CHOICE, tmp1);
