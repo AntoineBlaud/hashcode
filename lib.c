@@ -8,7 +8,8 @@
 
 struct json_object *parsed_json;
 char *buffer;
-const int T_PRINT = 10;
+const int T_PRINT = 30;
+const int E = 5000;
 char *PATH;
 int S = 0;
 void readJson(char *json)
@@ -33,21 +34,17 @@ char *concat(const char *s1, const char *s2)
 
 int in(char *s1, json_object *arr)
 {
-    // char *p = concat(PATH, "out.txt");
-    //FILE *out = fopen(p, "a");
+
     int arr_SIZE = json_object_array_length(arr);
-    int n = 0;
     for (int x = 2; x < arr_SIZE; x++)
     {
         char *s2 = json_object_get_string(json_object_array_get_idx(arr, x));
         if (strcmp(s1, s2) == 0)
         {
-            //fprintf(out, "Same: %s  %s\n", s1, s2);
-            n += 1;
+            return 1;
         }
     }
-    //fclose(out);
-    return n;
+    return 0;
 }
 
 int randint(int n)
@@ -99,6 +96,27 @@ struct json_object *copyStringArray(struct json_object *o)
     return c;
 }
 
+struct json_object *addStringArray(struct json_object *a, struct json_object *b)
+{
+    struct json_object *c = json_object_new_array();
+    int arr_SIZE = json_object_array_length(a);
+    for (int u = 0; u < arr_SIZE; u++)
+    {
+        char *s2 = json_object_get_string(json_object_array_get_idx(a, u));
+        json_object_array_add(c, json_object_new_string(s2));
+    }
+    arr_SIZE = json_object_array_length(b);
+    for (int u = 0; u < arr_SIZE; u++)
+    {
+        char *s2 = json_object_get_string(json_object_array_get_idx(b, u));
+        if (in(s2, c) == 0)
+            json_object_array_add(c, json_object_new_string(s2));
+    }
+
+    return c;
+}
+//////////////////////////////////////////////////////////////////////
+//HH
 void glouton(char *path, char *dataName)
 {
     PATH = path;
@@ -145,6 +163,88 @@ void glouton(char *path, char *dataName)
         S += MAX;
     }
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//VV
+void glouton2(char *path, char *dataName)
+{
+    PATH = path;
+    struct json_object *array;
+    struct json_object *best;
+    json_object_object_get_ex(parsed_json, dataName, &array);
+    int arr_SIZE = json_object_array_length(array);
+    clock_t update = clock() + T_PRINT * CLOCKS_PER_SEC;
+    for (int x = 0; x < arr_SIZE - 2; x = x + 2)
+    {
+        if (clock() > update)
+        {
+            printf("%d/%d    \n", x, arr_SIZE);
+            saveProgress(array, x - 2);
+            update = clock() + T_PRINT * CLOCKS_PER_SEC;
+        }
+        struct json_object *im1 = addStringArray(json_object_array_get_idx(array, x), json_object_array_get_idx(array, x + 1));
+        struct json_object *im2;
+        int im1_SIZE = json_object_array_length(im1);
+        int MAX = 0;
+        int BEST_CHOICE = x + 2;
+
+        for (int y = x + 2;(y < (x + E) && y < arr_SIZE-1); y++)
+        {
+            int RAND_CHOICE = y;
+            im2 = json_object_array_get_idx(array, RAND_CHOICE);
+            // Count occurence
+            int m = 0;
+            for (int z = 2; z < im1_SIZE; z++)
+            {
+                char *s = json_object_get_string(json_object_array_get_idx(im1, z));
+                m += in(s, im2);
+                //NEW BEST SCORE
+                if (m > MAX)
+                {
+                    MAX = m;
+                    BEST_CHOICE = RAND_CHOICE;
+                }
+            }
+        }
+        struct json_object *tmp1 = copyStringArray(json_object_array_get_idx(array, x + 2));
+        struct json_object *tmp2 = copyStringArray(json_object_array_get_idx(array, BEST_CHOICE));
+        json_object_array_put_idx(array, x + 2, tmp2);
+        json_object_array_put_idx(array, BEST_CHOICE, tmp1);
+
+        // Save
+        struct json_object *prev = copyStringArray(json_object_array_get_idx(array, BEST_CHOICE));
+        MAX = 0;
+        BEST_CHOICE = x + 3;
+        for (int y = x + 3;(y < (x + E) && y < arr_SIZE-1); y++)
+        {
+            int RAND_CHOICE = y;
+            im2 = json_object_array_get_idx(array, RAND_CHOICE);
+            // Count occurence
+            int m = 0;
+            for (int z = 2; z < im1_SIZE; z++)
+            {
+                char *s = json_object_get_string(json_object_array_get_idx(im1, z));
+                if (in(s, prev) == 0)
+                    m += in(s, im2);
+                //NEW BEST SCORE
+                if (m > MAX)
+                {
+                    MAX = m;
+                    BEST_CHOICE = RAND_CHOICE;
+                }
+            }
+        }
+        tmp1 = copyStringArray(json_object_array_get_idx(array, x + 3));
+        tmp2 = copyStringArray(json_object_array_get_idx(array, BEST_CHOICE));
+        json_object_array_put_idx(array, x + 3, tmp2);
+        json_object_array_put_idx(array, BEST_CHOICE, tmp1);
+    }
+}
 void compareImages(json_object *im1, json_object *im2)
 {
+}
+
+void main(void)
+{
+    readJson("data/data1/in.txt");
+    glouton2("data/data1/", "array");
 }

@@ -14,8 +14,8 @@ class Algo():
     
 
     def resolve(self):
-        self.input_part1 = self.input[:39999]
-        self.input_part2 = self.input[40000:]
+        self.input_part1 = self.input[:44999]
+        self.input_part2 = self.input[45000:]
 
         p1 = multiprocessing.Process(target=self.glouton1,args = (self.input_part1,"data1/",))
         p2 = multiprocessing.Process(target=self.glouton1,args = (self.input_part2,"data2/",))
@@ -34,4 +34,4 @@ class Algo():
         f.write(js)
         f.close()
         self.libc.readJson(("data/"+path+"in.txt").encode('utf-8'))
-        self.libc.glouton(("data/"+path).encode('utf-8'),"array".encode('utf-8'))
+        self.libc.glouton2(("data/"+path).encode('utf-8'),"array".encode('utf-8'))
