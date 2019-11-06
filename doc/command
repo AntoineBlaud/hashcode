@@ -1,0 +1,2 @@
+gcc -shared -fPIC lib.c -o lib.so -ljson-c
+cd Hashcode/Hashcode2019/

@@ -1,11 +1,7 @@
 {
-  "folders": [
-	{
-		"path": "."
-	},
-	{
-		"path": "C:\\Users\\antoi\\Documents\\GitHub\\Hashcode-Master"
-	}
-],
-  "settings": {}
+	"folders": [
+		{
+			"path": "/home/darkloner99/code"
+		}
+	]
 }
