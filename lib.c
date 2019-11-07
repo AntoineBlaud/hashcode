@@ -12,6 +12,14 @@ const int T_PRINT = 30;
 const int E = 5000;
 char *PATH;
 int S = 0;
+struct json_object *array;
+int arr_SIZE;
+clock_t update;
+int BEST_CHOICE;
+int x;
+int RAND_CHOICE;
+int MAX;
+
 void readJson(char *json)
 {
     FILE *f;
@@ -115,136 +123,176 @@ struct json_object *addStringArray(struct json_object *a, struct json_object *b)
 
     return c;
 }
+int isH(index)
+{
+    struct json_object *tmp = json_object_array_get_idx(array, index);
+    if (strcmp(json_object_get_string(json_object_array_get_idx(tmp, 1)), "H") == 0)
+        return 1;
+    return 0;
+}
+int isV(index)
+{
+    struct json_object *tmp = json_object_array_get_idx(array, index);
+    if (strcmp(json_object_get_string(json_object_array_get_idx(tmp, 1)), "V") == 0)
+        return 1;
+    return 0;
+}
+void config(char *path, char *dataName)
+{
+    PATH = path;
+    struct json_object *array;
+    struct json_object *best;
+    json_object_object_get_ex(parsed_json, dataName, &array);
+    int arr_SIZE = json_object_array_length(array);
+    clock_t update = clock() + T_PRINT * CLOCKS_PER_SEC;
+}
+void checkProgressUpdate(void)
+{
+    if (clock() > update)
+    {
+        printf("%d/%d    %d\n", x, arr_SIZE, S);
+        saveProgress(array, x - 2);
+        update = clock() + T_PRINT * CLOCKS_PER_SEC;
+    }
+}
+void permute(int pos1, int pos2)
+{
+    struct json_object *tmp1 = copyStringArray(json_object_array_get_idx(array, pos1));
+    struct json_object *tmp2 = copyStringArray(json_object_array_get_idx(array, pos2));
+    json_object_array_put_idx(array, pos1, tmp2);
+    json_object_array_put_idx(array, pos2, tmp1);
+}
+void eval(struct json_object *im1, struct json_object *im2)
+{
+    int m = 0;
+    int im1_SIZE = json_object_array_length(im1);
+    for (int z = 2; z < im1_SIZE; z++)
+    {
+        char *s = json_object_get_string(json_object_array_get_idx(im1, z));
+        m += in(s, im2);
+        //NEW BEST SCORE
+        if (m > MAX)
+        {
+            MAX = m;
+            BEST_CHOICE = RAND_CHOICE;
+        }
+    }
+}
+void evalH2(struct json_object *im1, struct json_object *im2, struct json_object *prev)
+{
+    int m = 0;
+    int im1_SIZE = json_object_array_length(im1);
+    for (int z = 2; z < im1_SIZE; z++)
+    {
+        char *s = json_object_get_string(json_object_array_get_idx(im1, z));
+        if (in(s, prev) == 0)
+            m += in(s, im2);
+        //NEW BEST SCORE
+        if (m > MAX)
+        {
+            MAX = m;
+            BEST_CHOICE = RAND_CHOICE;
+        }
+    }
+}
+/**
+ * T == 0 search  H
+ * T == 1  search  V
+ * */
+int findNextBestChoice(int t)
+{
+    for (int y = x + 1; y < arr_SIZE - 1; y++)
+    {
+        struct json_object *im = json_object_array_get_idx(array, y);
+        if (t == 0 && isH(im))
+            return y;
+        if (t == 1 && isV(im))
+            return y;
+    }
+    return x + 1;
+}
 //////////////////////////////////////////////////////////////////////
 //HH
-void glouton(char *path, char *dataName)
+void gloutonH(int inc)
 {
-    PATH = path;
-    struct json_object *array;
-    struct json_object *best;
-    json_object_object_get_ex(parsed_json, dataName, &array);
-    int arr_SIZE = json_object_array_length(array);
-    clock_t update = clock() + T_PRINT * CLOCKS_PER_SEC;
-    for (int x = 0; x < arr_SIZE - 2; x++)
+
+    checkProgressUpdate();
+    //struct json_object *im1 = json_object_array_get_idx(array, x);
+    struct json_object *im1 = addStringArray(json_object_array_get_idx(array, x - 1), json_object_array_get_idx(array, x - 2));
+    int im1_SIZE = json_object_array_length(im1);
+    MAX = 0;
+    BEST_CHOICE = findNextBestChoice(0);
+    for (int y = x; y < arr_SIZE - 1; y++)
     {
-        if (clock() > update)
-        {
-            printf("%d/%d    %d\n", x, arr_SIZE, S);
-            saveProgress(array, x - 2);
-            update = clock() + T_PRINT * CLOCKS_PER_SEC;
-        }
-        struct json_object *im1 = json_object_array_get_idx(array, x);
-        int MAX = 0;
-        int BEST_CHOICE = x + 1;
-        for (int y = x + 1; y < arr_SIZE - 1; y++)
-        {
-            //int RAND_CHOICE = y + randint(arr_SIZE - y - 1);
-            int RAND_CHOICE = y;
-            struct json_object *im2 = json_object_array_get_idx(array, RAND_CHOICE);
-            // Count occurence
-            int im1_SIZE = json_object_array_length(im1);
-            int m = 0;
-            for (int z = 2; z < im1_SIZE; z++)
-            {
-                char *s = json_object_get_string(json_object_array_get_idx(im1, z));
-                m += in(s, im2);
-                //NEW BEST SCORE
-                if (m > MAX)
-                {
-                    MAX = m;
-                    BEST_CHOICE = RAND_CHOICE;
-                }
-            }
-        }
-        struct json_object *tmp1 = copyStringArray(json_object_array_get_idx(array, x + 1));
-        struct json_object *tmp2 = copyStringArray(json_object_array_get_idx(array, BEST_CHOICE));
-        json_object_array_put_idx(array, x + 1, tmp2);
-        json_object_array_put_idx(array, BEST_CHOICE, tmp1);
-        S += MAX;
+        RAND_CHOICE = y;
+        struct json_object *im2 = json_object_array_get_idx(array, RAND_CHOICE);
+        // Count occurence
+        eval(im1, im2);
     }
+    permute(x, BEST_CHOICE);
+    S += MAX;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-//VV
-void glouton2(char *path, char *dataName)
+
+void gloutonVV(int inc)
 {
-    PATH = path;
-    struct json_object *array;
-    struct json_object *best;
-    json_object_object_get_ex(parsed_json, dataName, &array);
-    int arr_SIZE = json_object_array_length(array);
-    clock_t update = clock() + T_PRINT * CLOCKS_PER_SEC;
-    for (int x = 0; x < arr_SIZE - 2; x = x + 2)
+
+    checkProgressUpdate();
+    //struct json_object *im1 = addStringArray(json_object_array_get_idx(array, x), json_object_array_get_idx(array, x + 1));
+    struct json_object *im1 = json_object_array_get_idx(array, x - 1);
+    struct json_object *im2;
+    int im1_SIZE = json_object_array_length(im1);
+    MAX = 0;
+    BEST_CHOICE = findNextBestChoice(1);
+    for (int y = x; (y < (x + E) && y < arr_SIZE - 1); y++)
     {
-        if (clock() > update)
+        RAND_CHOICE = y;
+        if (isH(y) == 0)
         {
-            printf("%d/%d    \n", x, arr_SIZE);
-            saveProgress(array, x - 2);
-            update = clock() + T_PRINT * CLOCKS_PER_SEC;
-        }
-        struct json_object *im1 = addStringArray(json_object_array_get_idx(array, x), json_object_array_get_idx(array, x + 1));
-        struct json_object *im2;
-        int im1_SIZE = json_object_array_length(im1);
-        int MAX = 0;
-        int BEST_CHOICE = x + 2;
-
-        for (int y = x + 2;(y < (x + E) && y < arr_SIZE-1); y++)
-        {
-            int RAND_CHOICE = y;
             im2 = json_object_array_get_idx(array, RAND_CHOICE);
             // Count occurence
-            int m = 0;
-            for (int z = 2; z < im1_SIZE; z++)
-            {
-                char *s = json_object_get_string(json_object_array_get_idx(im1, z));
-                m += in(s, im2);
-                //NEW BEST SCORE
-                if (m > MAX)
-                {
-                    MAX = m;
-                    BEST_CHOICE = RAND_CHOICE;
-                }
-            }
+            eval(im1, im2);
         }
-        struct json_object *tmp1 = copyStringArray(json_object_array_get_idx(array, x + 2));
-        struct json_object *tmp2 = copyStringArray(json_object_array_get_idx(array, BEST_CHOICE));
-        json_object_array_put_idx(array, x + 2, tmp2);
-        json_object_array_put_idx(array, BEST_CHOICE, tmp1);
-
-        // Save
-        struct json_object *prev = copyStringArray(json_object_array_get_idx(array, BEST_CHOICE));
-        MAX = 0;
-        BEST_CHOICE = x + 3;
-        for (int y = x + 3;(y < (x + E) && y < arr_SIZE-1); y++)
+    }
+    permute(x,BEST_CHOICE);
+    x += 1;
+    // Save Previous state
+    struct json_object *prev = copyStringArray(json_object_array_get_idx(array, BEST_CHOICE));
+    MAX = 0;
+    BEST_CHOICE = findNextBestChoice(0);
+    for (int y = x; (y < (x + E) && y < arr_SIZE - 1); y++)
+    {
+        RAND_CHOICE = y;
+        if (isH(y) == 0)
         {
-            int RAND_CHOICE = y;
             im2 = json_object_array_get_idx(array, RAND_CHOICE);
             // Count occurence
-            int m = 0;
-            for (int z = 2; z < im1_SIZE; z++)
-            {
-                char *s = json_object_get_string(json_object_array_get_idx(im1, z));
-                if (in(s, prev) == 0)
-                    m += in(s, im2);
-                //NEW BEST SCORE
-                if (m > MAX)
-                {
-                    MAX = m;
-                    BEST_CHOICE = RAND_CHOICE;
-                }
-            }
+            evalH2
+            (im1, im2, prev);
         }
-        tmp1 = copyStringArray(json_object_array_get_idx(array, x + 3));
-        tmp2 = copyStringArray(json_object_array_get_idx(array, BEST_CHOICE));
-        json_object_array_put_idx(array, x + 3, tmp2);
-        json_object_array_put_idx(array, BEST_CHOICE, tmp1);
+    }
+    permute(x,BEST_CHOICE);
+    // must have x+=2
+}
+
+void mainHVV(void)
+{
+    // PLACE H FIRST
+    permute(0,findNextBestChoice(0));
+    for (x = 0; x < arr_SIZE - 2; x = x + 1)
+    {
+        gloutonVV(0);
+        gloutonH
     }
 }
-void compareImages(json_object *im1, json_object *im2)
+
+void glouton()
 {
 }
 
 void main(void)
 {
     readJson("data/data1/in.txt");
-    glouton2("data/data1/", "array");
+    config("data/data1/", "array");
+    mainHVV();
 }
