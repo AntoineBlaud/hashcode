@@ -11,9 +11,15 @@ NARROW_IN = "/home/darkloner99/code/Hashcode/Hashcode/2018-final/final_round_201
 SERVERS = Server(2)
 
 def evalQuality(node):
+    '''
+    Evalue la qualité d'un noeud(décisif)
+    '''
     return 1/(node.pack["deadline"])*5
 
 def narrow(data):
+    '''
+    Recherche les noeuds les plus intéressents
+    '''
 
     #Default choice
     best_choice = []
@@ -29,6 +35,9 @@ def narrow(data):
     return random.choice(best_choice)
 
 def narrow_construct(target):
+    #sauvegarder
+    #division process
+    #evaluer
     pass
 
 
