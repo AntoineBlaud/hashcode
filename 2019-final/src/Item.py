@@ -1,10 +1,10 @@
 
 
 class Item():
-    def __init__(self, name, compileT, replicateT):
-        self.name = name
-        self.ct = compileT
-        self.rT = replicateT
-
-    def setAvailableT(self,v):
-        self.aT = v
+    def __init__(self, node,Max=0):
+        self.name = node.name
+        self.ct = node.packs["cT"]
+        self.rT = node.packs["rT"]
+        self.aTin = self.cT + Max
+        self.aTOut = self.cT + self.rT + Max
+     

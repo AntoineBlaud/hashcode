@@ -2,7 +2,7 @@ import uuid
 from queue import Queue
 
 
-class Node:
+class Node: 
 
     def __init__(self, name,father=None):
 
@@ -124,14 +124,14 @@ class Node:
         '''
         Search a Node a return the full path off a Node
         '''
-        visited.append(self)
+        visited.append(node.uuid)
 
         for  key, value in node.childrens.items():
             # key = name
             # value = Object node
             if(name == key):
                 return Node.getAllFathers(value)
-            if value not in visited:
+            if value.uuid not in visited:
                fathers = Node.inDeepthSearch(value, name, visited)
                # if a deeper call return something different of false
                if (fathers!=False):
