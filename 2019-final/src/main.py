@@ -13,7 +13,7 @@ SERVERS = Server(2)
 
 def evalQuality(node):
     '''
-    Evalue la qualité d'un noeud(décisif)
+    Evalue la qualité d'un noeud(décisif) suivant la deadline, le nombre de points et le nombre de targets incluent dans la target (c5 c3)
     '''
     return 1/(node.pack["deadline"])*5
 
