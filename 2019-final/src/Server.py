@@ -2,6 +2,7 @@ from Item import Item
 import json
 import pickle
 import collections
+import random
 # 1) Ajouter la transformation de noeud en item sinon tout va buger
 # 2) Ajouter multiple fichier dans placeNodeInBestPos
 # 3) Modifier evalQuality dans main.py ( Pour loic)
@@ -75,19 +76,18 @@ class Server():
         current_server_time = self.getServeurWaitingTime(self.referenceServeur)
         rT = node.packs["rT"]
         cT = node.packs["cT"]
+        
 
         if(node.name not in self.aT.keys()):
     
             # If node is a leaf we place it where the waiting time is the min
             if(fastest_server_time+ rT < current_server_time):
                 pos = self.getFasterServerIndex()
-                aT = fastest_server_time
             else:
                 pos = self.referenceServeur
-                aT = current_server_time
 
             for children in node.childrens.values():
-                if(self.aT[children.name] > aT):
+                if((self.aT[children.name])> current_server_time):
                     pos = self.getNodeServerPosition(children)
                     aT = self.aT[children.name]
             #Placer le noeud
@@ -95,7 +95,7 @@ class Server():
             self.pos[node.name] = pos
             self.place(node,pos)
 
-        elif (self.aT[node.name] > current_server_time + cT):
+        elif (self.aT[node.name] > random.randint(1,3)*current_server_time + cT):
             pos = self.referenceServeur
              #Placer le noeud
             self.place(node,pos)
@@ -161,7 +161,7 @@ class Server():
         i = 0
         for waitingTime in self.times:
             if(waitingTime<Min):
-                Max = waitingTime
+                Min = waitingTime
                 bestServer  = i
             i+=1
         return bestServer

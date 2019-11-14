@@ -3,12 +3,13 @@ from Server import Server
 from IO import IO
 import random
 from copy import *
+import time
 
 
 EXEMPLE_IN = "/home/darkloner99/code/Hashcode/Hashcode/2019-final/final_round_2019.in/a_example.in"
 NARROW_IN = "/home/darkloner99/code/Hashcode/Hashcode/2019-final/final_round_2019.in/b_narrow.in"
-
-SERVERS = Server(2)
+BIG_IN = "/home/darkloner99/code/Hashcode/Hashcode/2019-final/final_round_2019.in/f_big.in"
+SERVERS = Server(50)
 
 def evalQuality(node):
     '''
@@ -48,13 +49,18 @@ def narrow_construct(target):
 
 if __name__== '__main__':
      #multiprocessing.set_start_method('spawn', True)
-     io = IO(EXEMPLE_IN)
+     start = time.time()
+     io = IO(BIG_IN)
      targets = io.getData()
-    
+     size = len(targets)
      for i in range(0,len(targets)-1):
          #Select Best choice
         target = dada(targets)
+        print(str(i)+" /"+str(size))
         narrow_construct(target)
+        
+     total = time.time() - start
+     print("Elapsed"+ str(total))
 
     
 
