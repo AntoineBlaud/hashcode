@@ -5,8 +5,9 @@ import random
 
 
 
-EXEMPLE_IN = "/home/darkloner99/code/Hashcode/Hashcode/2018-final/final_round_2019.in/a_example.in"
-NARROW_IN = "/home/darkloner99/code/Hashcode/Hashcode/2018-final/final_round_2019.in/b_narrow.in"
+
+EXEMPLE_IN = "/home/bertolottoloic/Code/hashcode/2019-final/final_round_2019.in/a_example.in"
+NARROW_IN = "/home/bertolottoloic/Code/hashcode/2019-final/final_round_2019.in/b_narrow.in"
 
 SERVERS = Server(2)
 
