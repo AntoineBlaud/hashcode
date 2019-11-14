@@ -27,11 +27,12 @@ class IO():
         for i in range(0,int(self.NcompiledFiles)):
             #Get file infos
             line = f.readline()
+            line = re.sub("\n","",line)
             infos = line.split(" ")
             # infos[0] = name
             node = Node(infos[0])
-            node.addToPack("cT",infos[1])
-            node.addToPack("rT",infos[2][0])
+            node.addToPack("cT",int(infos[1]))
+            node.addToPack("rT",int(infos[2]))
             #Get files dependencies 
             line =f.readline()
             line = re.sub("\n","",line)

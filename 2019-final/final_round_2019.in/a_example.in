@@ -14,25 +14,3 @@ c5 15 21
 c3 40 8
 c4 45 15
 c5 53 35
-
-
-  if(node not in self.aT):
-            aT = 0
-            # If node is a leaf we place it where the waiting time is the min
-            place = self.getFasterServerIndex()
-            for children in node:
-                if(self.aT[children] > aT):
-                    place = self.getNodeServerPosition(children)
-                    aT = self.aT[children]
-            #self.servers[place].append(children)
-            self.aT[children] = children.packs("cT") +  children.packs("rT") + self.times[place]
-            self.times[place]+=children.packs("cT")
-            self.pos[children] = place
-
-        elif (self.aT[node]>self.getFasterServerIndex()-1.5*node.packs["cT"]):
-            place = self.getFasterServerIndex()
-            #self.servers[place].append(node)
-            time = children.packs("cT") +  children.packs("rT") + self.times[place]
-            if(time < self.aT[children]):
-                self.aT[children] = time
-                self.pos[children] = place

@@ -229,10 +229,10 @@ class Node:
     # mettre a jour deepth
 
     def __contains__(self, v):
-
         if v in self.childrens.values():
             return True
         return False
 
     def __len__(self):
         return len(self.childrens)
+

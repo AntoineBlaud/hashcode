@@ -2,7 +2,7 @@ from Node import Node
 from Server import Server
 from IO import IO
 import random
-
+from copy import *
 
 
 EXEMPLE_IN = "/home/darkloner99/code/Hashcode/Hashcode/2019-final/final_round_2019.in/a_example.in"
@@ -14,7 +14,7 @@ def evalQuality(node):
     '''
     Evalue la qualité d'un noeud(décisif)
     '''
-    return 1/(node.pack["deadline"])*5
+    return 1/(node.packs["deadline"])*5
 
 def dada(data):
     '''
@@ -32,12 +32,16 @@ def dada(data):
             best_pt = single
             best_choice.append(node)
 
-    return random.choice(best_choice)
+    a = random.choice(best_choice)
+    b = deepcopy(a)
+    data.remove(a)
+    return b
 
 def narrow_construct(target):
     #sauvegarder
     #division process
     #evaluer
+    SERVERS.start(target)
     pass
 
 
@@ -49,8 +53,7 @@ if __name__== '__main__':
     
      for i in range(0,len(targets)-1):
          #Select Best choice
-        target = narrow(targets)
-        targets.remove(target)
+        target = dada(targets)
         narrow_construct(target)
 
     
