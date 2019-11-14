@@ -130,7 +130,7 @@ class Node:
             # key = name
             # value = Object node
             if(name == key):
-                return Node.getAllFathers(value)
+                return value
             if value.uuid not in visited:
                fathers = Node.inDeepthSearch(value, name, visited)
                # if a deeper call return something different of false
@@ -174,7 +174,7 @@ class Node:
         while(q.empty):
             item = q.get()
             if name == item.name:
-                return getAllFathers(item)
+                return item
             else:
                 for n in item.childrens:
                     if(n != None):
