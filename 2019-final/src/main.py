@@ -5,9 +5,13 @@ import random
 
 
 
+<<<<<<< HEAD
 
 EXEMPLE_IN = "/home/bertolottoloic/Code/hashcode/2019-final/final_round_2019.in/a_example.in"
 NARROW_IN = "/home/bertolottoloic/Code/hashcode/2019-final/final_round_2019.in/b_narrow.in"
+EXEMPLE_IN = "/home/darkloner99/code/Hashcode/Hashcode/2019-final/final_round_2019.in/a_example.in"
+NARROW_IN = "/home/darkloner99/code/Hashcode/Hashcode/2019-final/final_round_2019.in/b_narrow.in"
+>>>>>>> 11e7d2de69a4b40929c7c8ed2080183db176107b
 
 SERVERS = Server(2)
 
@@ -17,7 +21,7 @@ def evalQuality(node):
     '''
     return 1/(node.pack["deadline"])*5
 
-def narrow(data):
+def dada(data):
     '''
     Recherche les noeuds les plus intéressents
     '''

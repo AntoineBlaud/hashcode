@@ -19,10 +19,10 @@ class IO():
         f = open(self.filename, 'r')
         infos = f.readline().split(" ")
 
-        self.NcompiledFiles = infos[0]
-        self.NtargetsFiles = infos[1]
+        self.NcompiledFiles = int(infos[0])
+        self.NtargetsFiles = int(infos[1])
         # delete \n
-        self.NavailableServers = infos[2][0]
+        self.NavailableServers = int(infos[2][0])
 
         for i in range(0,int(self.NcompiledFiles)):
             #Get file infos
