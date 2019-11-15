@@ -122,7 +122,7 @@ class Node:
     @staticmethod
     def inDeepthSearch(node, name, visited=[]):
         '''
-        Search a Node a return the full path off a Node
+        Search a Node a return the full path off a Node.
         '''
         visited.append(node.uuid)
 
