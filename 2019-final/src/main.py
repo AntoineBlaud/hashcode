@@ -12,32 +12,46 @@ BIG_IN = "/home/darkloner99/code/Hashcode/Hashcode/2019-final/final_round_2019.i
 # Pas encore initialiser
 SERVERS = None
 
-def evalQuality(node):
-    '''
-    Evalue la qualite d'un noeud(decisif)
-    '''
-    return 1/(node.packs["deadline"])*5
 
-def dada(data):
+def urgent_evalQuality(node):
+    '''
+    Evalue la qualité d'un noeud(décisif) suivant la deadline, le nombre de points et le nombre de targets incluent dans la target (c5 c3)
+    '''
+    if(node.target):
+        return node.packs["points"]*2 + (1/(node.packs["deadline"]))*1000*node.packs["points"]
+    return 0
+
+def manytar_evalQuality(node):
+    '''
+    Evalue la qualité d'un noeud(décisif) en fonction des dépendances avec d'autres noeuds(décisif)
+    '''
+    if(len(node.childrens)==0):
+        return urgent_evalQuality(node)
+    points = 0
+    for node1 in node.childrens.values():
+        points += manytar_evalQuality(node1)
+    return points + urgent_evalQuality(node) 
+
+
+def bestNode(data):
     '''
     Recherche les noeuds les plus interessents
     '''
 
     #Default choice
-    best_choice = []
-    best_choice.append(data[len(data) - 1])
+    best_choice = {}
+    best_pt = manytar_evalQuality(data[0])
+    best_choice[data[0]] = best_pt
     #Point counter
-    best_pt = evalQuality(data[len(data) - 1])
     for node in data:
-        single = evalQuality(node)
-        if((best_pt - best_pt*0.1)<single):
-            best_pt = single
-            best_choice.append(node)
-
-    a = random.choice(best_choice)
-    b = deepcopy(a)
-    data.remove(a)
-    return b
+        single = manytar_evalQuality(node)
+        tmp_pt = best_pt
+        if node not in best_choice:
+            if((best_pt*0.9)<single):
+                best_pt = single
+                best_choice[node] = best_pt
+    best_choice = sorted(best_choice.items(), key=operator.itemgetter(1), reverse=True)
+    return best_choice[random.randint(1,5)][0]
 
 def narrow_construct(target:Node):
     points_before = SERVERS.evalTotalPoint()
