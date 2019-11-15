@@ -1,5 +1,9 @@
 from Item import Item
 import json
+import pickle
+import collections
+import random
+from Node import Node
 # 1) Ajouter la transformation de noeud en item sinon tout va buger
 # 2) Ajouter multiple fichier dans placeNodeInBestPos
 # 3) Modifier evalQuality dans main.py ( Pour loic)
@@ -13,137 +17,209 @@ class Server():
 
         #Create server store compilation step
         self.servers = []
-        self.jsonBackupFile = "backup.json"
+        self.backupFile = "/home/darkloner99/code/Hashcode/Hashcode/2019-final/data/backup.json"
         #Number of servers
         self.N = N
-        # All new node append are in aT, value are rT+cT
+        # All new node append are in aT, values of aT are rT+cT
         self.aT = {}
-        #each server have a compiledTime
+        #each server have a compiledTime save here
         self.times = []
-        #All new node have a position in a server
+        #All new node have a position referenced here in the a server
         self.pos = {}
+        #All targets node are append here
+        self.targets =  []
         #Each server is represented by a list
-
         for i in range(0,N):
             self.servers.append([])
             self.times.append(0)
 
         self.json_data = {"servers":self.servers,"aT":self.aT,"times":self.times,"pos":self.pos}
+        
 
 
-    def start(self,target):
-        self.referenceServeur = getFasterServerIndex()
-        self.divisionProcess(target)
-    
-    def divisionProcess(self,target):
+    def start(self,target:Node):
+        '''
+        Starting point function
+        '''
+        if(target.name not in self.targets):
+            self.referenceServeur = self.getFasterServerIndex()
+            self.backup()
+            self.divisionProcess(target)
+            self.evalTotalPoint()
+        
+            
+        
+    def divisionProcess(self,target:Node):
         '''
         Subdivide, Subdivide graph until a leaf, place the leaf and goes back. Each step we use
         placeNodeInBestPosition to place the node
         '''
         # Available Time
+        #Save procedeed target
+        self.targets.append(target.name)
         cT = {}
-        for node in target:
-            cT[node] = self.evalGraph(node)
-        sorted(cT.items(), key=lambda t: t[1],reverse=True)
 
-        for node in cT.items():
+        for node in target.childrens.values():
+            cT[node] = self.evalGraph(node)
+        cT = dict(sorted(cT.items(), key=lambda t: t[1],reverse=True))
+
+
+        for node in cT.keys():
             self.divisionProcess(node)
         
-        self.placeNodeInBestPosition(node)
+        self.placeNodeInBestPosition(target)
 
         # call place target
 
 
-    def placeNodeInBestPosition(self,node):
+    def placeNodeInBestPosition(self,node:Node):
         '''
         Place a node taking in account only process before childrens comp + rep
         Choose the server where the max(rep + compil) children's time is MAX
         '''
 
-        '''
-        WARNING !!!! 
-        ajouter un deuxiéme exemplaire si plus rapide
-        '''
-        if(node not in self.aT):
-            aT = 0
+        fastest_server_time = self.getServeurWaitingTime(self.getFasterServerIndex())
+        current_server_time = self.getServeurWaitingTime(self.referenceServeur)
+        rT = node.packs["rT"]
+        cT = node.packs["cT"]
+        
+
+        if(node.name not in self.aT.keys()):
+    
             # If node is a leaf we place it where the waiting time is the min
-            if(self.getServeurWaitingTime(self.getFasterServerIndex) + node.packs("rT") < self.getServeurWaitingTime(self.referenceServeur)):
-                place = self.getFasterServerIndex()
+            if(fastest_server_time+ rT < current_server_time):
+                pos = self.getFasterServerIndex()
             else:
-                place = self.referenceServeur
+                pos = self.referenceServeur
 
-            for children in node:
-                if(self.aT[children] > aT):
-                    place = self.getNodeServerPosition(children)
-                    aT = self.aT[children]
+            for children in node.childrens.values():
+                if((self.aT[children.name])> current_server_time):
+                    pos = self.getNodeServerPosition(children)
+                    aT = self.aT[children.name]
             #Placer le noeud
-            self.aT[node] = node.packs("cT") +  node.packs("rT") + self.getServeurWaitingTime(place)
-            self.times[place]+=node.packs("cT")
-            self.pos[node] = place
+            self.aT[node.name] = cT +  rT + self.getServeurWaitingTime(pos)
+            self.pos[node.name] = pos
+            self.place(node,pos)
 
-        elif (self.aT[node]>self.getFasterServerIndex() > self.getServeurWaitingTime(self.referenceServeur) + 1.5*node.packs["cT"]):
-            place = self.referenceServeur
+        elif (self.aT[node.name] > random.randint(1,3)*current_server_time + cT):
+            pos = self.referenceServeur
+            self.aT[node.name] = cT +  rT + self.getServeurWaitingTime(pos)
              #Placer le noeud
-            self.times[place]+=node.packs("cT")
+            self.place(node,pos)
         
 
     
-    def evalGraph(self,node, visited={}):
+    
+    def evalGraph(self,node:Node, visited={}):
         '''
         Return the time to compile all a graph on 1 Server
         '''
         T = 0
-        for n in node:
-            T+=n.evalGraph()
-        return T+node.packs["cT"]
+        for n in node.childrens.values():
+            T+=self.evalGraph(n)
+        return T+node.packs["rT"] 
 
-    def getNodeServerPosition(self,node):
+    def getNodeServerPosition(self,node:Node):
         '''
         Get the curr pos of a node (can be multiple), return the fastest
         '''
-        return self.pos[node]
+        return self.pos[node.name]
  
-    def evalTargetPoint(self,target):
+    def evalTargetPoint(self,target:Item):
         '''
         Return profit of a target
         '''
-        pass
+        deadline = target.node.packs["deadline"]
+        points = target.node.packs["points"]
+        elapsedTime  = deadline - target.aTin
+        if(elapsedTime > 0):
+            return points + elapsedTime
+        return 0
 
-        
+
 
     def evalTotalPoint(self):
         '''
-        return Point gen by all servers
+        Return point generated by all servers
         '''
-        pass
+        targets = {}
+
+        for server in self.servers:
+            for item in server:
+                # Si le noeud est une target
+                if(item.node.target):
+                    points = self.evalTargetPoint(item)
+                     # Si la target rapporte des points
+                    if((points > 0)):
+                        # Save target if it wasn't before or score is better
+                        if((item.name not in targets.keys())):
+                            targets[item.name] = points
+                        elif((item.name in targets.keys()) and (targets[item.name] < points)):
+                            targets[item.name] = points
+                        
+
+
+            
 
 
     def backup(self):
         '''
         Save Save and recave to be lot of more efficient in combination tests
         '''
-        f = open(self.jsonBackupFile)
+        with open(self.backupFile, 'wb') as f:
+            backup={"servers":self.servers,"aT":self.aT,"times":self.times,
+            "pos":self.pos}
+            pickle.dump(backup,f)
+
+    def restore(self):
+        with open(self.backupFile, 'wb') as f:
+            backup = pickle.load(f)
+        #restore 
+        self.servers = backup["servers"]
+        self.aT = backup["aT"]
+        self.times = backup ["times"]
+        self.pos = backup["pos"]
+
+
 
     def getFasterServerIndex(self):
-        pass
-    
-    def getServeurWaitingTime(self,index):
-        pass
+        #Defaults
+        Min = self.times[0]
+        bestServer = 0
+        i = 0
+        for waitingTime in self.times:
+            if(waitingTime<Min):
+                Min = waitingTime
+                bestServer  = i
+            i+=1
+        return bestServer
 
-    def placeFile(self,node,pos):
+    
+    def getServeurWaitingTime(self,pos):
+        return self.times[pos]
+    
+    def addServeurWaitingTime(self,pos,value):
+        self.times[pos] += value
+
+    def place(self,node:Node,pos):
         '''
         Place the file on the server pos and 
         '''
         Max = 0
         Pos = 0
+        timelapse = 0
         for child in node.childrens.values():
-            if(self.aT[child]>Max):
-                Max = self.aT[child]
-            if(pos == self.pos[child]):
+            if(self.aT[child.name]>Max):
+                Max = self.aT[child.name]
+            if(pos == self.pos[child.name]):
                 Max-=child.packs["rT"]
 
-        size = len(self.servers[pos])
-        self.servers[pos].push(Item(node,Max))
+        wait = self.getServeurWaitingTime(pos)
+        if(Max-wait > 0):
+            timelapse = Max - wait
+        self.servers[pos].append(Item(node,max(Max,wait)))
+        # Update Waiting time
+        self.addServeurWaitingTime(pos,timelapse + node.packs["cT"])
 
 
 
