@@ -1,7 +1,6 @@
 import uuid
 from queue import Queue
 
-
 class Node: 
 
     def __init__(self, name,father=None):
