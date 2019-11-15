@@ -9,7 +9,8 @@ import time
 EXEMPLE_IN = "/home/darkloner99/code/Hashcode/Hashcode/2019-final/final_round_2019.in/a_example.in"
 NARROW_IN = "/home/darkloner99/code/Hashcode/Hashcode/2019-final/final_round_2019.in/b_narrow.in"
 BIG_IN = "/home/darkloner99/code/Hashcode/Hashcode/2019-final/final_round_2019.in/f_big.in"
-SERVERS = Server(2)
+# Pas encore initialiser
+SERVERS = None
 
 def evalQuality(node):
     '''
@@ -38,30 +39,33 @@ def dada(data):
     data.remove(a)
     return b
 
-def narrow_construct(target):
-    #sauvegarder
-    #division process
-    #evaluer
+def narrow_construct(target:Node):
+    points_before = SERVERS.evalTotalPoint()
     SERVERS.start(target)
-    pass
+    points_after = SERVERS.evalTotalPoint() 
+    if(points_after == points_before):
+        SERVERS.restore()
+    print("OK")
 
 
 
 if __name__== '__main__':
      #multiprocessing.set_start_method('spawn', True)
      start = time.time()
+     # Load data
      io = IO(EXEMPLE_IN)
      targets = io.getData()
+     SERVERS = Server(io.NavailableServers)
      size = len(targets)
+
      for i in range(0,size):
-         #Select Best choice
         target = targets[i]
         print(str(i)+" /"+str(size))
         narrow_construct(target)
 
+    # Print elapsed time
      total = time.time() - start
      print("Elapsed: "+ str(total))
-     print("OK")
 
     
 

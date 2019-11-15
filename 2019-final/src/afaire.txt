@@ -1,0 +1,4 @@
+
+main: -relancer plusieurs fois le même, donc partie aléatoire, evaluer le score a chaque fois et faire une courbe 
+      -Faire backup restore si pas de points 
+      -rajouter partie loic
