@@ -228,7 +228,7 @@ class Node:
     # mettre a jour deepth
 
     def __contains__(self, v):
-        if v in self.childrens.values():
+        if v in self.childrens.keys():
             return True
         return False
 

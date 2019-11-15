@@ -17,7 +17,7 @@ class Server():
 
         #Create server store compilation step
         self.servers = []
-        self.backupFile = "/home/darkloner99/code/Hashcode/Hashcode/2019-final/data/backup.json"
+        self.backupPath = "/home/darkloner99/code/Hashcode/Hashcode/2019-final/data/"
         #Number of servers
         self.N = N
         # All new node append are in aT, values of aT are rT+cT
@@ -34,8 +34,8 @@ class Server():
             self.times.append(0)
 
         self.json_data = {"servers":self.servers,"aT":self.aT,"times":self.times,"pos":self.pos}
-        self.QUOTA_1 = 0
-        self.QUOTA_2 = random.randint(2,6)
+        self.QUOTA_1 = None
+        self.QUOTA_2 = None
         
 
 
@@ -45,7 +45,8 @@ class Server():
         '''
         if(target.name not in self.targets):
             self.referenceServeur = self.chooseReferenceServer(target) #PROBLEME
-            self.backup()
+            self.backup("backup_level_2.json")
+            self.newRandomQuota()
             self.divisionProcess(target)
         
             
@@ -105,6 +106,7 @@ class Server():
         elif (self.aT[node.name] > random.randint(1,self.QUOTA_2)*(current_server_time + cT) and self.pos[node.name]!=self.referenceServeur):
             pos = self.referenceServeur
             self.aT[node.name] = cT +  rT + self.getServeurWaitingTime(pos)
+            self.pos[node.name] = pos
              #Placer le noeud
             self.place(node,pos)
         
@@ -162,29 +164,25 @@ class Server():
             TOTAL+=v
         return TOTAL
 
-                        
-
-
-            
-
-
-    def backup(self):
+                    
+    def backup(self,filename):
         '''
         Save Save and recave to be lot of more efficient in combination tests
         '''
-        with open(self.backupFile, 'wb') as f:
+        with open(self.backupPath + filename, 'wb') as f:
             backup={"servers":self.servers,"aT":self.aT,"times":self.times,
-            "pos":self.pos}
+            "pos":self.pos,"targets":self.targets}
             pickle.dump(backup,f)
 
-    def restore(self):
-        with open(self.backupFile, 'rb') as f:
+    def restore(self,filename):
+        with open(self.backupPath + filename, 'rb') as f:
             backup = pickle.load(f)
         #restore 
         self.servers = backup["servers"]
         self.aT = backup["aT"]
         self.times = backup ["times"]
         self.pos = backup["pos"]
+        self.targets = backup["targets"]
 
 
 
@@ -220,9 +218,11 @@ class Server():
         timelapse = 0
         for child in node.childrens.values():
             if(self.aT[child.name]>Max):
-                Max = self.aT[child.name]
+                newMax = self.aT[child.name]
             if(pos == self.pos[child.name]):
-                Max-=child.packs["rT"]
+                newMax-=child.packs["rT"]
+            if(newMax > Max):
+                Max  = newMax
 
         wait = self.getServeurWaitingTime(pos)
         if(Max-wait > 0):
@@ -240,7 +240,7 @@ class Server():
         i = 0
         for server in self.servers:
             for item in server:
-                if(Node.inDeepthSearch(target,item.name)):
+                if(item.name in target):
                     score+=1
             if(score > Max and score > self.QUOTA_1):
                 best = i
@@ -248,6 +248,10 @@ class Server():
 
             i+=1
         return best
+
+    def newRandomQuota(self):
+        self.QUOTA_1 = random.randint(0,random.randint(1,200))
+        self.QUOTA_2 = random.randint(1,random.randint(1,10))
 
 
 

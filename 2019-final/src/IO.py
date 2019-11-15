@@ -17,12 +17,14 @@ class IO():
     
     def getData(self):
         f = open(self.filename, 'r')
-        infos = f.readline().split(" ")
+        line = f.readline()
+        line = re.sub("\n","",line)
+        infos = line.split(" ")
 
         self.NcompiledFiles = int(infos[0])
         self.NtargetsFiles = int(infos[1])
         # delete \n
-        self.NavailableServers = int(infos[2][0])
+        self.NavailableServers = int(infos[2])
 
         for i in range(0,int(self.NcompiledFiles)):
             #Get file infos
