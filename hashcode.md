@@ -210,13 +210,13 @@ https://tryalgo.org/hashcode/
 
 ## Etapes importantes 
 
-#### - Compréhension du problème
-#### - Analyse des fichiers (et des sous problèmes) + réflexion algorithmique
-#### - Récupération des données et organisation 
-#### - Conception de l'algorithme en essayant de le généraliser un maximum afin qu'avec de petites modifications il fonctionne sur tous les fichiers
-#### - Création de la visualisation , monitoring afin de surveiller la progression du score
-#### - Faire tourner l'algorithme en enregistrant les données dans des fichiers json
-#### - Finalement quand l'algo tourne, coder la sortie afin de soumettre le résultat
+ - Compréhension du problème
+ - Analyse des fichiers (et des sous problèmes) + réflexion algorithmique
+ - Récupération des données et organisation 
+ - Conception de l'algorithme en essayant de le généraliser un maximum afin qu'avec de petites modifications il fonctionne sur tous les fichiers
+ - Création de la visualisation , monitoring afin de surveiller la progression du score
+ - Faire tourner l'algorithme en enregistrant les données dans des fichiers json
+ - Finalement quand l'algo tourne, coder la sortie afin de soumettre le résultat
 
 <hr>
 
