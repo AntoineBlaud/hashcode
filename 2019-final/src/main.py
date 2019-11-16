@@ -25,7 +25,6 @@ def urgent_evalQuality(node):
     if(node.target):
         return node.packs["points"]*2 + node.packs["deadline"]
     return 0
-
 def manytar_evalQuality(node):
     '''
     Evalue la qualité d'un noeud(décisif) en fonction des dépendances avec d'autres noeuds(décisif)
@@ -78,7 +77,7 @@ if __name__== '__main__':
     #multiprocessing.set_start_method('spawn', True)
     start = time.time()
     # Load data
-    io = IO(INTRIGUING_IN)
+    io = IO(TYPICAL_IN)
     targets = io.getData()
     SERVERS = Server(io.NavailableServers)
     size = len(targets)
@@ -91,7 +90,7 @@ if __name__== '__main__':
     for x in range(0,10):
         for y in range(0,size):
             ### CHANGER ICI
-            target = targets[size - y - 1]
+            target = targets[y]
             construct(target)
             sys.stdout.write(str(y)+"/"+str(size)+ "  " + str(SERVERS.evalTotalPoint())+"\r")
             sys.stdout.flush()
