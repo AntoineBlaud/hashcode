@@ -3,12 +3,12 @@
 ## Python
 
 
- ### Spécifier le type de l'argument et le type de retour
+ #### Spécifier le type de l'argument et le type de retour
 ```
 def function(var: int) -> int:
 ```
 
-### Méthodes spéciales utiles
+#### Méthodes spéciales utiles
 ```
 __eq__()
 __del__()
@@ -20,7 +20,7 @@ __add__()
 __sub__()
 __mul__()
 ```
- ### Sauvegarder ou copier un objet
+ #### Sauvegarder ou copier un objet
 ```
 import pickle
 pickle.load()
@@ -29,13 +29,13 @@ pickle.dumps()
 import copy
 copy.deepcopy()
 ```
- ### Annotations 
+ #### Annotations 
 ```
 @staticmethod
 @property
 ```
 
-### Ajouter documentation
+#### Ajouter documentation
 ```
 # Ici titre
 def mafunction()
@@ -44,7 +44,7 @@ Ici explication
 '''
 ```
 
-### Decorateurs
+#### Decorateurs
 ```
 def uppercase_decorator(function):
     def wrapper():
@@ -62,13 +62,13 @@ decorate()
 ```
 
 
-### Générateurs
+#### Générateurs
 ```
 maliste = [a*2 for a in range(0,1000)]
 mondic = {a:a*2 for a in range(0,1000)}
 ```
 
-### Exceptions
+#### Exceptions
 ```
 raise TypeError("Message")
 
@@ -80,13 +80,13 @@ except ValueError:
 # Main: Exception
 
 ```
-### Trier ou melanger
+#### Trier ou melanger
 ```
 Dict:  cT = dict(sorted(cT.items(), key=lambda t: t[1],reverse=True))
 shuffle(DATA)
 
 ```
-### Thread et Multiprocessing
+#### Thread et Multiprocessing
 ```
 Thread: 
 https://openclassrooms.com/fr/courses235344-apprenez-a-programmer-en-python/2235545-faites-de-la-programmation-parallele-avec-threading
@@ -112,7 +112,7 @@ p2.start()
 
 ```
 
-### Write same place in console
+#### Write same place in console
 ```
 sys.stdout.write("Mon texte  \r")
 sys.stdout.flush()
@@ -123,7 +123,7 @@ sys.stdout.flush()
 ## C
 
 
-### Librairie JSON-C
+#### Librairie JSON-C
 ```
 DOC: https://json-c.github.io/json-c/json-c-0.10/doc/html/json__object_8h.html
 https://progur.com/2018/12/how-to-parse-json-in-c.html
@@ -140,14 +140,14 @@ json_object_array_length()
 json_object_object_get_ex()
 json_object_array_put_idx() 	
 ```
-### Clock
+#### Clock
 ```
 #include <time.h>
 
 update = clock() + T_PRINT * CLOCKS_PER_SEC;
 ```
 
-### Files
+#### Files
 ```
 # Know file size
 f = fopen(json, "r");
