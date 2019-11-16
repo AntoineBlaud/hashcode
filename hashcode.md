@@ -202,20 +202,35 @@ https://www.youtube.com/watch?v=eL3fTl4mykY
 Résoudre des problème de couverture exact; comme le sudoku
 #### Merkle trees 
 https://tryalgo.org/fr/2016/12/10/arbres-de-merkle/
-#### Branch and Bound
-.......
+
 #### Set cover et set packing
 https://tryalgo.org/hashcode/
+
+Soit un univers composé des entiers de 0 à n-1, ainsi qu’une liste d’ensembles sur cet univers. Dans le problème set cover il faut trouver une collection minimal d’ensembles qui couvrent tout l’univers. C’est-à-dire chaque entier de l’univers doit être contenu dans un ensemble de la solution. Dans la variante pondérée chaque ensemble vient avec un prix, et il faut minimiser le prix total de la solution.
+
+Dans le problème set packing il faut trouver une collection d’ensembles disjoints, qui maximisent la taille de leur union. De manière équivalent on peut aussi chercher à minimiser le nombre d’éléments de l’univers pas couverts par la solution.
+
+**Branch and Bound**
+
+
+### Se renseigner sur : https://fr.wikipedia.org/wiki/21_problèmes_NP-complets_de_Karp
 <hr>
 
 ## Others
 https://devdocs.io/numpy~1.17/routines.ctypeslib#numpy.ctypeslib.as_ctypes
-https://stackoverflow.com/questions/22425921/pass-a-2d-numpy-array-to-c-using-ctypes/27737099
+
+https://stackoverflow.com/questions/22425921pass-a-2d-numpy-array-to-c-using-ctypes/27737099
+
 https://stackoverflow.com/questions/4145775/how-do-i-convert-a-python-list-into-a-c-array-by-using-ctypes
+
 https://stackoverflow.com/questions/4355524/getting-data-from-ctypes-array-into-numpy
+
 https://towardsdatascience.com/an-introduction-to-gpu-optimization-6ea255ef6360
+
 https://www.journaldev.com/31907/calling-c-functions-from-python
+
 https://www.csestack.org/calling-c-functions-from-python/
+
 https://docs.python.org/2/library/ctypes.html
 
 
