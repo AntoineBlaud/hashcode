@@ -208,7 +208,7 @@ https://tryalgo.org/fr/2016/12/10/arbres-de-merkle/
 https://tryalgo.org/hashcode/
 <hr>
 
-## Etapes importants hashcode
+## Etapes importantes 
 
 #### - Compréhension du problème
 #### - Analyse des fichiers (et des sous problèmes) + réflexion algorithmique
