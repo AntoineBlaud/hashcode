@@ -2,7 +2,6 @@
 
 ## Python
 
-<br/>
 
  ### Spécifier le type de l'argument et le type de retour
 ```
@@ -119,10 +118,10 @@ sys.stdout.write("Mon texte  \r")
 sys.stdout.flush()
 ```
 <br/>
+<hr>
 
 ## C
 
-<br/>
 
 ### Librairie JSON-C
 ```
@@ -160,6 +159,7 @@ fread(buffer, size, 1, f);
 
 ```
 <br/>
+<hr>
 
 ## Algorithmes
 
@@ -194,9 +194,29 @@ Trouver le plus court chemin en passant au moins une fois par chaques routes
 #### Voyageur de commerce
 Plus court chemin en visitant chaque sommet une seule fois
 #### Djikra
-Plus court chemin
+Plus court chemin, possibilité de négatif
 #### Ford-fulkerson
 Flot maximum, transport maximum                         
 https://www.youtube.com/watch?v=eL3fTl4mykY
+#### Algorithmes liens dansans: Knuth
+Résoudre des problème de couverture exact; comme le sudoku
+#### Merkle trees 
+https://tryalgo.org/fr/2016/12/10/arbres-de-merkle/
+#### Branch and Bound
+.......
+#### Set cover et set packing
+https://tryalgo.org/hashcode/
+<hr>
+
+## Others
+https://devdocs.io/numpy~1.17/routines.ctypeslib#numpy.ctypeslib.as_ctypes
+https://stackoverflow.com/questions/22425921/pass-a-2d-numpy-array-to-c-using-ctypes/27737099
+https://stackoverflow.com/questions/4145775/how-do-i-convert-a-python-list-into-a-c-array-by-using-ctypes
+https://stackoverflow.com/questions/4355524/getting-data-from-ctypes-array-into-numpy
+https://towardsdatascience.com/an-introduction-to-gpu-optimization-6ea255ef6360
+https://www.journaldev.com/31907/calling-c-functions-from-python
+https://www.csestack.org/calling-c-functions-from-python/
+https://docs.python.org/2/library/ctypes.html
+
 
 
