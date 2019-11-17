@@ -230,6 +230,8 @@ Dans le problème set packing il faut trouver une collection d’ensembles disjo
 
 
 ## Others
+Utiliser pypy
+
 https://devdocs.io/numpy~1.17/routines.ctypeslib#numpy.ctypeslib.as_ctypes
 
 https://stackoverflow.com/questions/22425921pass-a-2d-numpy-array-to-c-using-ctypes/27737099
@@ -246,5 +248,20 @@ https://www.csestack.org/calling-c-functions-from-python/
 
 https://docs.python.org/2/library/ctypes.html
 
+## Install pypy 
 
+sudo wget https://bootstrap.pypa.io/get-pip.py 
+sudo pypy3 -m venv myvenv --without-pip --system-site-packages  
+python3 -m venv myvenv --without-pip --system-site-packages 
+pypy3 -m ensurepip         
+pypy3 get-pip.py    
+sudo apt-get install python3.6-venv    
+sudo add-apt-repository ppa:pypy/ppa   
+sudo apt update 
+sudo apt install pypy3  
+wget https://bootstrap.pypa.io/get-pip.py
+./pypy get-pip.py
+
+For usage try,
+pypy -m pip install validators
 
