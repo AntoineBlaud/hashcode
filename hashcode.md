@@ -163,7 +163,7 @@ fread(buffer, size, 1, f);
 
 ## Algorithmes
 
-<br/>
+
 
 
 #### Knuth-Morris-Pratt
@@ -173,7 +173,7 @@ Hasher des données pour les comparer plus rapidement
 #### Programmation dynamique TOP DOWN
 Programmation récursive, enregistrer les résultats deja calculer
 https://www.supinfo.com/cours/2ADS/chapitres/05-programmation-dynamique
-#### Tri
+#### Tries
 Tri fusion, quicksort
 #### Approche Gloutonne
 L'approche gloutonne consiste à prendre le meilleur résulats à chaque étapes,
@@ -230,7 +230,6 @@ Dans le problème set packing il faut trouver une collection d’ensembles disjo
 
 
 ## Others
-Utiliser pypy
 
 https://devdocs.io/numpy~1.17/routines.ctypeslib#numpy.ctypeslib.as_ctypes
 
@@ -265,3 +264,27 @@ wget https://bootstrap.pypa.io/get-pip.py
 For usage try,
 pypy -m pip install validators
 
+<hr>
+
+## Emploi du Temps
+
+**Semaine du 17/11**:  Comprendre les 21 problèmes combinatoire et explorer leurs solutions +  Apprendre tout de numpy, multiprocessing, threading, matplotlib
+
+**Semaine du 24/11 au 8/12**: Faire youtube hashcode
+
+<hr>
+
+## 21 Problèmes combinatoires
+
+- **SAT** : *Un problème de ce type consiste a satisfaire un ensemble de condition (et, ou, not) de manière a vérifier si il peut  y avoir un résultat juste/possible . On modélise le problème par des variables Xijz par exemple avec i la valeur et jz la position, puis on ecrit les conditions et on trouve les valeurs*
+
+
+Exemple d'application: *Emploi du temps, les 4 reines.*
+
+Algorithme de résolution: *https://fr.wikipedia.org/wiki/Algorithme_DPLL*
+
+Liens: 
+*http://monge.univ-mlv.fr/~thapper/teaching/mmpo/2017/05-slides.pdf* ; *http://igm.univ-mlv.fr/~thapper/teaching/mmpo/2017/06-slides.pdf*
+
+
+- **CLIQUE**: 
