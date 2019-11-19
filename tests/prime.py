@@ -3,8 +3,13 @@ import math
 import sys
 import os
 import random
-import queue
 import threading
+from numba import *
+from numba.errors import NumbaDeprecationWarning, NumbaPendingDeprecationWarning
+import warnings
+
+warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
+warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 # Python program for implementation of Quicksort Sort 
 
 # This function takes last element as pivot, places 
@@ -12,7 +17,8 @@ import threading
 # array, and places all smaller (smaller than pivot) 
 # to left of pivot and all greater elements to right 
 # of pivot 
-def partition(arr,low,high): 
+@autojit( nopython=True )
+def partition(arr:list,low:int,high:int): 
 	i = ( low-1 )		 # index of smaller element 
 	pivot = arr[high]	 # pivot 
 	for j in range(low , high): 
@@ -32,8 +38,9 @@ def partition(arr,low,high):
 # low --> Starting index, 
 # high --> Ending index 
 
-# Function to do Quick sort 
-def quickSort(arrs,low,high=int): 
+# Function to do Quick sort
+@autojit( nopython=True )
+def quickSort(arrs:list,low:int,high:int): 
 	
 	if low < high: 
 
@@ -48,7 +55,7 @@ def quickSort(arrs,low,high=int):
 
 # Driver code to test above 
 s = time.time()
-size = 10000000
+size = 1000
 arr = [random.randint(0,size) for i in range(0,size)]
 #arr = np.random.randint(0,high=size,size=(1,size))
 #arr = np.sort(arr[0])

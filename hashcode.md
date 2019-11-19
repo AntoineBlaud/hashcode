@@ -84,11 +84,20 @@ except ValueError:
 ```
 Dict:  cT = dict(sorted(cT.items(), key=lambda t: t[1],reverse=True))
 shuffle(DATA)
-
 ```
+
+#### Write same place in console
+```
+sys.stdout.write("Mon texte  \r")
+sys.stdout.flush()
+```
+<hr>
+
+### Speed up code
+
 #### Thread et Multiprocessing
 ```
-Thread: 
+"Threading: 
 https://openclassrooms.com/fr/courses235344-apprenez-a-programmer-en-python/2235545-faites-de-la-programmation-parallele-avec-threading
 
 import threading
@@ -101,10 +110,7 @@ b = threading.Thread(None, affiche, None, (200,), {'nom':'thread b'})
 a.start()
 b.start()
 
-
-
-Multiprocessing: 
-
+#Multiprocessing: 
 p1 = multiprocessing.Process(target=self.glouton,args = (self.input_part1,"P1/",))
 p2 = multiprocessing.Process(target=self.glouton,args = (self.input_part2,"P2/",))
 p1.start()
@@ -112,11 +118,30 @@ p2.start()
 
 ```
 
-#### Write same place in console
+
+#### line_profiler
 ```
-sys.stdout.write("Mon texte  \r")
-sys.stdout.flush()
+import line_profiler
+import atexit
+profile = line_profiler.LineProfiler()
+atexit.register(profile.print_stats)
+
+mettre @profile devant fonction
 ```
+#### Numba 
+```
+from numba.errors import NumbaDeprecationWarning, NumbaPendingDeprecationWarning
+import warnings
+from numba import *
+
+warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
+warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
+
+mettre @jit(nopython=True,parallel=True) devant fonction
+
+```
+
+#### Utiliser numpy et matplolib !!
 <br/>
 <hr>
 
@@ -176,11 +201,7 @@ https://www.supinfo.com/cours/2ADS/chapitres/05-programmation-dynamique
 #### Tries
 Tri fusion, quicksort
 #### Approche Gloutonne
-L'approche gloutonne consiste à prendre le meilleur résulats à chaque étapes,
-ce qui peut donner un bon résultat mais il ne sera pas parfait
-<br>
-<br>
-
+L'approche gloutonne consiste à prendre le meilleur résulats à chaque étapes,ce qui peut donner un bon résultat mais il ne sera pas parfait
 #### Fenwick
 Quand on travaille sur des intervalles on l'utilise, par exemple si on a une liste de client et qu'on souhaite savoir tout ce qui ont entre 100 et 1533 euros
 #### Arbre intervalle
@@ -200,20 +221,19 @@ Flot maximum, transport maximum
 https://www.youtube.com/watch?v=eL3fTl4mykY
 #### Algorithmes liens dansans: Knuth
 Résoudre des problème de couverture exact; comme le sudoku
+#### Algorithmes génétiques
+https://antoinevastel.com/algorithme/python/algorithmes%20g%C3%A9n%C3%A9tiques/2016/04/30/probleme-voyageur-commerce.html
+#### Linear programming
+https://towardsdatascience.com/linear-programming-and-discrete-optimization-with-python-using-pulp-449f3c5f6e99
 #### Merkle trees 
 https://tryalgo.org/fr/2016/12/10/arbres-de-merkle/
+#### Branch and Bound
+https://www.youtube.com/watch?v=3RBNPc0_Q6g
+https://www.youtube.com/watch?v=1FEP_sNb62k
+https://www.youtube.com/watch?v=yV1d-b_NeK8
 
-#### Set cover et set packing
-https://tryalgo.org/hashcode/
+http://www.xavierdupre.fr/app/ensae_teaching_cs/helpsphinx/specials/algorithm_culture.html
 
-Soit un univers composé des entiers de 0 à n-1, ainsi qu’une liste d’ensembles sur cet univers. Dans le problème set cover il faut trouver une collection minimal d’ensembles qui couvrent tout l’univers. C’est-à-dire chaque entier de l’univers doit être contenu dans un ensemble de la solution. Dans la variante pondérée chaque ensemble vient avec un prix, et il faut minimiser le prix total de la solution.
-
-Dans le problème set packing il faut trouver une collection d’ensembles disjoints, qui maximisent la taille de leur union. De manière équivalent on peut aussi chercher à minimiser le nombre d’éléments de l’univers pas couverts par la solution.
-
-**Branch and Bound**
-
-
-### Se renseigner sur : https://fr.wikipedia.org/wiki/21_problèmes_NP-complets_de_Karp
 <hr>
 
 ## Etapes importantes 
@@ -247,23 +267,6 @@ https://www.csestack.org/calling-c-functions-from-python/
 
 https://docs.python.org/2/library/ctypes.html
 
-## Install pypy 
-
-sudo wget https://bootstrap.pypa.io/get-pip.py 
-sudo pypy3 -m venv myvenv --without-pip --system-site-packages  
-python3 -m venv myvenv --without-pip --system-site-packages 
-pypy3 -m ensurepip         
-pypy3 get-pip.py    
-sudo apt-get install python3.6-venv    
-sudo add-apt-repository ppa:pypy/ppa   
-sudo apt update 
-sudo apt install pypy3  
-wget https://bootstrap.pypa.io/get-pip.py
-./pypy get-pip.py
-
-For usage try,
-pypy -m pip install validators
-
 <hr>
 
 ## Emploi du Temps
@@ -279,12 +282,69 @@ pypy -m pip install validators
 - **SAT** : *Un problème de ce type consiste a satisfaire un ensemble de condition (et, ou, not) de manière a vérifier si il peut  y avoir un résultat juste/possible . On modélise le problème par des variables Xijz par exemple avec i la valeur et jz la position, puis on ecrit les conditions et on trouve les valeurs*
 
 
-Exemple d'application: *Emploi du temps, les 4 reines.*
+    Exemple d'application: *Emploi du temps, les 4 reines.*
 
-Algorithme de résolution: *https://fr.wikipedia.org/wiki/Algorithme_DPLL*
+    Algorithme de résolution: *https://fr.wikipedia.org/wiki/Algorithme_DPLL*; 
+    https://github.com/jcwleo/DPLL-Algorithm/blob/master/DPLL.py
 
-Liens: 
-*http://monge.univ-mlv.fr/~thapper/teaching/mmpo/2017/05-slides.pdf* ; *http://igm.univ-mlv.fr/~thapper/teaching/mmpo/2017/06-slides.pdf*
+    Liens: *http://monge.univ-mlv.fr/~thapper/teaching/mmpo/2017/05-slides.pdf* ; *http://igm.univ-mlv.fr/~thapper/teaching/mmpo/2017/06-slides.pdf*
 
 
-- **CLIQUE**: 
+- **CLIQUE** : *Trouver dans un graphe le plus grand réseau de noeud qui sont tous connecté les uns aux autres, par exemple trouver le plus grand groupe de personne qui se connaissent toutes*
+
+    Liens: *https://fr.wikipedia.org/wiki/Probl%C3%A8me_de_la_clique*
+
+    Algorithmes: https://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm ; https://iq.opengenus.org/bron-kerbosch-algorithm/
+
+- **SET PACKING** : *Soit un univers U et S1,...,Sn une liste d'ensemble. Le but est de trouver une collection d'ensemble disjoint(min ou max) qui maximisent la taille de leur union*
+
+    Exemple d'application: Pizza hashcode
+
+    Algorithmes: https://tryalgo.org/fr/2017/01/22/google-hashcode-google-pizza/
+
+- **VERTEX COVER**: *Le but est de trouver le minimum de sommet qui réunisse toutes les branches*
+
+    Algorithmes: Calculer couplage maximal: https://fr.wikipedia.org/wiki/Couplage_(th%C3%A9orie_des_graphes)
+
+- **SET COVERING**: *Le but est de couvrir tout univers U avec des sous ensembles S telles que le coût soit minimal(chaque ensemble S à un côut)*
+
+        Algorithme: https://www.emse.fr/~delorme/Papiers/MemoireDEA/memoire004.html
+
+- **FEEDBACK ARC-NODE SET**: *Supprimer des noeuds ou des branches afin de rendre le graphe acyclique*
+
+- **HAMILTONIEN** : *Dans un graphe trouver un chemin qui passe une et une seule fois par chaque sommet*
+
+    De même:
+
+    - **Chemin eurélien**:
+    Passer une fois par chaques routes
+    - **Poster chinois**:
+    Trouver le plus court chemin en passant au moins une fois par chaques routes
+    - **Voyageur de commerce**:
+    Plus court chemin en visitant chaque sommet une seule fois
+    - **Djikra**:
+    Plus court chemin, possibilité de négatif
+
+- **EXACT COVER**: Étant donné un ensemble U et une collection S  de sous-ensembles de U, une couverture exacte de U est une sous-collection S ∗  de S tel que tout élément de U est élément d'exactement un des ensembles de S ∗ En d'autres termes, une couverture exacte de U est une sous-collection S ∗  de S qui est une partition de U : les ensembles éléments de S ∗  sont disjoints deux à deux, et leur union est U. 
+
+    Exemple d'application: Les 8 dames, sudoku
+
+    Algorithmes: Programmation dynamique ou X knuth
+
+    Liens: https://fr.wikipedia.org/wiki/Algorithme_X_de_Knuth
+
+- **ARBRE DE STEINER**: *Trouver l'arbre minimal qui regroupe tous les noeuds*
+
+    Algoithme: https://fr.wikipedia.org/wiki/Algorithme_de_Kruskal
+
+- **HITTING SET**: *Étant donné une famille S de sous-ensembles d'un « univers » U, on cherche un sous-ensemble H de U (le hitting set) qui contient au moins un élément de chaque sous-ensemble de la famille S. De plus, il est demandé que le nombre d'éléments de H n'excède pas une valeur k donnée.*
+
+    Algorithmes: https://www.analyticsvidhya.com/blog/2017/02/lintroductory-guide-on-linear-programming-explained-in-simple-english/
+
+- **KNAPSTACK**: *Le problème du sac à dos*
+
+    Algorithmes: programation dynamique(résolution exact), glouton, génétique, 
+
+- **JOB SEQUENCING**: *Un ensemble de taches avec des durées d'execution et des pénalités*
+
+- **PARITION**: *Soit S un multiensemble d'entier naturel, on veut vérifier si il exsite une parition de S telle que la somme des éléments de S1 soit égale à celle de S2*
