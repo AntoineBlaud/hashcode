@@ -91,6 +91,13 @@ shuffle(DATA)
 sys.stdout.write("Mon texte  \r")
 sys.stdout.flush()
 ```
+
+### Numpy
+```
+https://numpy.org/doc/1.17/reference/routines.html
+https://numpy.org/doc/1.17/reference/routines.array-creation.html
+https://numpy.org/doc/1.17/reference/routines.array-manipulation.html
+```
 <hr>
 
 ### Speed up code
@@ -225,6 +232,8 @@ Résoudre des problème de couverture exact; comme le sudoku
 https://antoinevastel.com/algorithme/python/algorithmes%20g%C3%A9n%C3%A9tiques/2016/04/30/probleme-voyageur-commerce.html
 #### Linear programming
 https://towardsdatascience.com/linear-programming-and-discrete-optimization-with-python-using-pulp-449f3c5f6e99
+https://buildmedia.readthedocs.org/media/pdf/python-mip/latest/python-mip.pdf
+http://benalexkeen.com/linear-programming-with-python-and-pulp/
 #### Merkle trees 
 https://tryalgo.org/fr/2016/12/10/arbres-de-merkle/
 #### Branch and Bound
@@ -308,7 +317,7 @@ https://docs.python.org/2/library/ctypes.html
 
 - **SET COVERING**: *Le but est de couvrir tout univers U avec des sous ensembles S telles que le coût soit minimal(chaque ensemble S à un côut)*
 
-        Algorithme: https://www.emse.fr/~delorme/Papiers/MemoireDEA/memoire004.html
+    Algorithme: https://www.emse.fr/~delorme/Papiers/MemoireDEA/memoire004.html
 
 - **FEEDBACK ARC-NODE SET**: *Supprimer des noeuds ou des branches afin de rendre le graphe acyclique*
 
@@ -347,4 +356,4 @@ https://docs.python.org/2/library/ctypes.html
 
 - **JOB SEQUENCING**: *Un ensemble de taches avec des durées d'execution et des pénalités*
 
-- **PARITION**: *Soit S un multiensemble d'entier naturel, on veut vérifier si il exsite une parition de S telle que la somme des éléments de S1 soit égale à celle de S2*
+- **PARTITION**: *Soit S un multiensemble d'entier naturel, on veut vérifier si il exsite une parition de S telle que la somme des éléments de S1 soit égale à celle de S2*
