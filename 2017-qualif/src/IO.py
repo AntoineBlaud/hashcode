@@ -1,6 +1,7 @@
 import numpy as np
 import re
-from Objects import DataCenter,Video,Request,CacheServer
+from Objects import DataCenter,Video,CacheServer,EndPoint
+from copy import deepcopy
 
 class IO():
 
@@ -14,10 +15,18 @@ class IO():
         self.NRequests = 0
         self.NEndPoints = 0
         self.dataCenter = DataCenter()
+        self.endPoints = []
+
+
+    def readLine(self,f):
+        line = f.readline()
+        line = re.sub("\n","",line)
+        line = line.split(" ")
+        return line
 
     def getData(self):
         f = open(self.filename,'r')
-        line = f.readline().split(" ")
+        line = self.readLine(f)
         self.NVideos = int(line[0])
         self.NEndPoints = int(line[1])
         self.NRequests = int(line[2])
@@ -27,31 +36,33 @@ class IO():
         for i in range(0,self.NCacheServers):
             self.cacheServers.append(CacheServer(i,self.sizeCacheServers))
         
-        line = f.readline()
-        line = re.sub("\n","",line)
-        line = line.split(" ")
+        line = self.readLine(f)
 
         for i in range(0,self.NVideos):
             self.videos.append(Video(i,int(line[i])))
 
         for i in range(0,self.NEndPoints):
-            line = f.readline()
-            line = re.sub("\n","",line)
-            line = line.split(" ")
-            self.dataCenter.addEndPoint(i,int(line[0]))
+            line = self.readLine(f)
+            eP_ID = i
+            eP = EndPoint(eP_ID)
+            self.endPoints.append(eP)
+            latency = int(line[0])
+            self.dataCenter.addEndPoint(eP_ID,latency)
             for j in range(0,int(line[1])):
-                
-                line = f.readline()
-                line = re.sub("\n","",line)
-                line = line.split(" ")
-                self.cacheServers[int(line[0])].addEndPoint(i,int(line[1]))
+                line = self.readLine(f)
+                server_ID = int(line[0])
+                latency = int(line[1])
+                server = self.cacheServers[server_ID]
+                server.addEndPoint(eP_ID,latency)
+                eP.addServer(server)
 
         requests = [[],[]]
         for i in range(0,self.NRequests):
-            line = f.readline()
-            line = re.sub("\n","",line)
-            line = line.split(" ")
-            self.videos[int(line[0])].addRequest(int(line[1]),int(line[2]))
+            line = self.readLine(f)
+            video_ID = int(line[0])
+            endPoint_ID = int(line[1])
+            requests =  int(line[2])
+            self.videos[video_ID].addRequest(endPoint_ID,requests)
 
 
         

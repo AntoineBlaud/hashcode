@@ -1,68 +1,122 @@
 import numpy as np
 from copy import deepcopy
+import math
+from numba import jit
 
-class DataCenter():
+INF  = 400000000
+
+class DataCenter:
     def __init__(self):
-        self.endPoints = {}
+        # endPoint -> temps de latence
+        self.latency = {}
 
-    def addEndPoint(self,id:int,latency:int):
-        self.endPoints[id] = latency
+    def addEndPoint(self, id: int, latency: int):
+        '''
+        Parameters:
+        id (int), latency (int)
+        '''
+        self.latency[id] = latency
 
-    
-class Video():
-    def __init__(self,id:int,size:int):
+
+class Video:
+    def __init__(self, id: int, size: int):
         self.id = id
         self.size = size
-        self.requests = np.ones((2,1),dtype='i')
+        # endpoint -> Nombre de requete
+        self.requests = {}
         self.indexRequest = 0
-    
-
-class Request():
-    def __init__(self,video:Video,idEndPoint:int,nRequest:int):
-        self.video = video
-        self.idEndPoint = idEndPoint
-        self.nRequest = nRequest
-
 
     def __str__(self):
-        return "V"+self.id+":"+self.size
+        return "V:" + str(self.id)
 
     def __repr__(self):
-        return "V"+self.id+":"+self.size
+        return "V:" + str(self.id)
 
-    def addRequest(self, id, value):
-        n = np.asarray([[id],[value]])
-        self.requests = np.append(self.requests,n,axis=1)
+    def addRequest(self, id, value:int):
+        '''
+        Ajoute un endpoint avec un nombre de requete pour cette video spécifique
+        Parameters:
+        id (int), latency (int)
+        '''
+        self.requests[id] = value
 
 
-class CacheServer():
-    def __init__(self,id:int,size:int):
+
+class CacheServer:
+    def __init__(self, id: int, size: int):
         self.id = id
         self.size = size
         self.size_free = size
-        self.stocked_videos = np.ones((1,100))
+        # Represente les vidéos stockés dans le cacher server
+        self.stocked_videos = np.ones((1, 100),dtype=object)
         self.indexVideo = 0
-        self.endPoints = np.ones((2,0),dtype='i')
-        self.indexEndPoints = 0
+        # Pour chaque endPoint est associé une latence
+        self.latency = {}
 
     def __str__(self):
-        return "C"+self.id
+        return "S:"+str(self.id)
 
     def __repr__(self):
-        return "C"+self.id
-    
-    def addVideo(self,video : Video):
-        self.stocked_videos[self.indexVideo] = video
+        return "S:"+str(self.id)
 
-    def removeVideo(self,index):
-        for i in range(index,self.indexVideo):
-            self.stocked_videos[index]= deepcopy(self.stocked_videos[index+1])
+    
+    def addVideo(self, video: Video):
+        '''
+        Ajoute une video au server
+        Parameters:
+        video (Video)
+        '''
+        self.stocked_videos[0][self.indexVideo] = video
+        self.indexVideo+=1
+
+    def removeVideo(self, index):
+        for i in range(index, self.indexVideo):
+            self.stocked_videos[index] = deepcopy(self.stocked_videos[index + 1])
         self.indexVideo -= 1
 
     def removeAllVideos(self):
-        self.stocked_videos = np.empty((1,100))
+        self.stocked_videos = np.empty((1, 100))
 
-    def addEndPoint(self,id:int,size:int):
-        n = np.asarray([[id],[size]])
-        self.endPoints = np.append(self.endPoints,n,axis=1)
+    def addEndPoint(self, id: int, size: int):
+        self.latency[id] = size
+
+    def getStockedVideo(self):
+        return self.stocked_videos[0][0:self.indexVideo]
+
+class EndPoint:
+    def __init__(self, id):
+        self.id = id
+        # Liste des serveurs caches rattaché à ce endPoint
+        self.connectedServer = []
+
+    def addServer(self, server: CacheServer):
+        '''
+        Ajoute un serveur (connecte au endpoint)
+        Parameters:
+        server (CacheServer)
+        '''
+        self.connectedServer.append(server)
+
+    def __str__(self):
+        return "E:"+str(self.id)
+
+    def __repr__(self):
+        return "E:"+str(self.id)
+    
+    def favoriteServerLatency(self,endPoint,video):
+        '''
+        Pour une video spécifier et un endPoint spécifier, regarde dans les serveurs connecté au endpoint
+        si la video est dedans. Retourne le plus petit temps de latence
+        Parameters:
+        server (CacheServer)
+        '''
+        latency = INF
+        for server in self.connectedServer:
+            for v in server.getStockedVideo():
+                if(v==video and server.latency[endPoint.id]<latency):
+                    latency = server.latency[endPoint.id]
+        return latency
+            
+
+
 
