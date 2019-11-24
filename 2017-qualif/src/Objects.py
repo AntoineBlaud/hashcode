@@ -1,7 +1,7 @@
-import numpy as np
 from copy import deepcopy
 import math
-from numba import jit
+from numba import *
+import numpy as np
 
 INF  = 400000000
 

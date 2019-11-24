@@ -148,6 +148,14 @@ mettre @jit(nopython=True,parallel=True) devant fonction
 
 ```
 
+#### Conseils
+```
+Pour la lecture de donné on peut rester en python des des listes et dic
+Pour l'écriture utiliser numpy sans numba
+Pour les autres boucles, utiliser njit
+
+```
+
 #### Utiliser numpy et matplolib !!
 <br/>
 <hr>

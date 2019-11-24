@@ -1,6 +1,7 @@
 from Objects import *
 from Process import *
 
+
 def test_server_score(io):
     server = io.cacheServers[0]
     video0 = io.videos[0]
@@ -21,3 +22,14 @@ def test_server_score(io):
     print(process.evalueServerScore(server))
     print(process.evalueServerScore(server2))
 
+
+def test_knapstack():
+    size = 200
+    val = np.asarray([random.randint(40, size) for i in range(0, size)])
+    wt = np.asarray([random.randint(40, size) for i in range(0, size)])
+    W = 6000
+    n = len(val)
+    #print(val)
+    #print(wt)
+    a = Process.knapSack(W, wt, val, n)
+    print(a)
