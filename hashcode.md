@@ -91,6 +91,14 @@ shuffle(DATA)
 sys.stdout.write("Mon texte  \r")
 sys.stdout.flush()
 ```
+#### Autres
+```
+Savoir utiliser:
+set()
+map()
+lambda
+zip()
+```
 
 ### Numpy
 ```
