@@ -3,6 +3,14 @@ import math
 from numba import *
 import numpy as np
 
+
+import line_profiler
+import atexit
+
+profile = line_profiler.LineProfiler()
+atexit.register(profile.print_stats)
+
+
 INF  = 400000000
 
 class DataCenter:
@@ -50,7 +58,7 @@ class CacheServer:
         # Represente les vidéos stockés dans le cacher server
         self.stocked_videos = np.ones((1, 100),dtype=object)
         self.indexVideo = 0
-        # Pour chaque endPoint est associé une latence
+        # Pour chaque endPoint index est associé une latence
         self.latency = {}
 
     def __str__(self):
@@ -60,7 +68,7 @@ class CacheServer:
         return "S:"+str(self.id)
 
     
-    def addVideo(self, video: Video):
+    def addVideo(self, video: Video,setLatency=False,endpoints= []):
         '''
         Ajoute une video au server
         Parameters:
@@ -68,14 +76,28 @@ class CacheServer:
         '''
         self.stocked_videos[0][self.indexVideo] = video
         self.indexVideo+=1
+        if(setLatency):
+            for i in self.latency.keys():
+                if(i in video.requests.keys()):
+                    endP = endpoints[i]
+                    endP.setfavoriteServerLatency(video,self.latency[i])
 
-    def removeVideo(self, index):
+
+    @jit(forceobj=True)
+    def removeVideo(self, video):
+        index = self.getVideoIndex(video)
         for i in range(index, self.indexVideo):
-            self.stocked_videos[index] = deepcopy(self.stocked_videos[index + 1])
+            self.stocked_videos[0][index] = self.stocked_videos[0][index + 1]
         self.indexVideo -= 1
 
     def removeAllVideos(self):
-        self.stocked_videos = np.empty((1, 100))
+        self.stocked_videos = np.empty((1, 100),dtype=object)
+        self.indexVideo = 0
+
+    def getVideoIndex(self,video):
+        for i in range(0,self.indexVideo+1):
+            if(video ==self.stocked_videos[0][i]):
+                return i
 
     def addEndPoint(self, id: int, size: int):
         self.latency[id] = size
@@ -96,6 +118,7 @@ class EndPoint:
         server (CacheServer)
         '''
         self.connectedServer.append(server)
+        self.videoLatency = {}
 
     def __str__(self):
         return "E:"+str(self.id)
@@ -103,20 +126,48 @@ class EndPoint:
     def __repr__(self):
         return "E:"+str(self.id)
     
-    def favoriteServerLatency(self,endPoint,video):
+    #Trop lent
+    # def favoriteServerLatency(self,endPoint,video):
+    #     '''
+    #     Pour une video spécifier et un endPoint spécifier, regarde dans les serveurs connecté au endpoint
+    #     si la video est dedans. Retourne le plus petit temps de latence
+    #     Parameters:
+    #     server (CacheServer)
+    #     '''
+    #     latency = INF
+    #     for server in self.connectedServer:
+    #         for v in server.getStockedVideo():
+    #             if(v==video and server.latency[endPoint.id]<latency):
+    #                 latency = server.latency[endPoint.id]
+    #     return latency
+
+    def getfavoriteServerLatency(self,endPoint,video):
         '''
         Pour une video spécifier et un endPoint spécifier, regarde dans les serveurs connecté au endpoint
         si la video est dedans. Retourne le plus petit temps de latence
         Parameters:
         server (CacheServer)
         '''
-        latency = INF
+        for v in self.videoLatency.keys():
+            if(v == video):
+                return self.videoLatency[video]
+        #Si elle n'y est pas retourne la latence INFINIE
+        return INF
+        
+    def setfavoriteServerLatency(self,video,latency):
+        self.videoLatency[video] = latency
+
+    def removeVideo(self,video):
+        leave = False
         for server in self.connectedServer:
             for v in server.getStockedVideo():
-                if(v==video and server.latency[endPoint.id]<latency):
-                    latency = server.latency[endPoint.id]
-        return latency
-            
+                if(v==video):
+                    server.removeVideo(video)
+                    leave= True
+                    break
+            if(leave):
+                break
+        
 
 
 
