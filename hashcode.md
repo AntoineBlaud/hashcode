@@ -248,11 +248,18 @@ Résoudre des problème de couverture exact; comme le sudoku
 https://antoinevastel.com/algorithme/python/algorithmes%20g%C3%A9n%C3%A9tiques/2016/04/30/probleme-voyageur-commerce.html
 #### Linear programming
 https://towardsdatascience.com/linear-programming-and-discrete-optimization-with-python-using-pulp-449f3c5f6e99
+
 https://buildmedia.readthedocs.org/media/pdf/python-mip/latest/python-mip.pdf
+
 http://benalexkeen.com/linear-programming-with-python-and-pulp/
+
 https://www.linkedin.com/pulse/bin-packing-python-pulp-michael-basilyan
+
 https://coin-or.github.io/pulp/CaseStudies/a_blending_problem.html#
+
 https://pyomocontrib-simplemodel.readthedocs.io/en/latest/knapsack.html
+
+https://pythonhosted.org/PuLP/CaseStudies/a_sudoku_problem.html
 #### Merkle trees 
 https://tryalgo.org/fr/2016/12/10/arbres-de-merkle/
 #### Branch and Bound
