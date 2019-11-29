@@ -91,6 +91,14 @@ shuffle(DATA)
 sys.stdout.write("Mon texte  \r")
 sys.stdout.flush()
 ```
+#### Autres
+```
+Savoir utiliser:
+set()
+map()
+lambda
+zip()
+```
 
 ### Numpy
 ```
@@ -358,10 +366,10 @@ https://docs.python.org/2/library/ctypes.html
 
     Algorithmes: https://www.analyticsvidhya.com/blog/2017/02/lintroductory-guide-on-linear-programming-explained-in-simple-english/
 
-- **KNAPSTACK**: *Le problème du sac à dos*
+- **KNAPSTACK**: *Le problème du sac à dos* (fait)
 
     Algorithmes: programation dynamique(résolution exact), glouton, génétique, 
 
-- **JOB SEQUENCING**: *Un ensemble de taches avec des durées d'execution et des pénalités*
+- **JOB SEQUENCING**: *Un ensemble de taches avec des durées d'execution et des pénalités* (fait)
 
 - **PARTITION**: *Soit S un multiensemble d'entier naturel, on veut vérifier si il exsite une parition de S telle que la somme des éléments de S1 soit égale à celle de S2*
