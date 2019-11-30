@@ -359,6 +359,7 @@ https://docs.python.org/2/library/ctypes.html
     Plus court chemin en visitant chaque sommet une seule fois
     - **Djikra**:
     Plus court chemin, possibilité de négatif
+    http://home.ubalt.edu/ntsbarsh/opre640A/partIII.htm#rsppr
 
 - **EXACT COVER**: Étant donné un ensemble U et une collection S  de sous-ensembles de U, une couverture exacte de U est une sous-collection S ∗  de S tel que tout élément de U est élément d'exactement un des ensembles de S ∗ En d'autres termes, une couverture exacte de U est une sous-collection S ∗  de S qui est une partition de U : les ensembles éléments de S ∗  sont disjoints deux à deux, et leur union est U. 
 
