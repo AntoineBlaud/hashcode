@@ -355,6 +355,7 @@ https://docs.python.org/2/library/ctypes.html
     Passer une fois par chaques routes
     - **Poster chinois**:
     Trouver le plus court chemin en passant au moins une fois par chaques routes https://www.me.utexas.edu/~jensen/ORMM/supplements/units/net_methods/rel_net_lp.pdf
+    http://home.ubalt.edu/ntsbarsh/opre640A/partIII.htm#rsppr
     - **Voyageur de commerce**:
     Plus court chemin en visitant chaque sommet une seule fois
     - **Djikra**:
