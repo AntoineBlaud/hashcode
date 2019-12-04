@@ -165,6 +165,7 @@ Pour les autres boucles, utiliser njit
 ```
 
 #### Utiliser numpy et matplolib !!
+https://docs.scipy.org/doc/numpy-1.13.0/reference/routines.html
 <br/>
 <hr>
 
