@@ -1,5 +1,5 @@
 import numpy as np
-from Process import *
+from IO import IO
 import random
 
 
@@ -10,11 +10,6 @@ KITTEN_IN = "/home/darkloner99/code/Hashcode/Hashcode/2017-qualif/qualification_
 def main():
 
     io = IO(KITTEN_IN)
-    io.getData()
-    data = Data(io)
-    process = Process(data)
-    print("Starting finding solution...")
-    process.dynamic_start()
-    print("ok")
+    
 
 main()

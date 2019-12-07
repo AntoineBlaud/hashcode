@@ -1,6 +1,5 @@
 import numpy as np
 import re
-from Objects import DataCenter,Video,CacheServer,EndPoint
 from copy import deepcopy
 
 class IO():
