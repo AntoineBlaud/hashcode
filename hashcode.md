@@ -165,6 +165,7 @@ Pour les autres boucles, utiliser njit
 ```
 
 #### Utiliser numpy et matplolib !!
+https://docs.scipy.org/doc/numpy-1.13.0/reference/routines.html
 <br/>
 <hr>
 
@@ -248,8 +249,18 @@ Résoudre des problème de couverture exact; comme le sudoku
 https://antoinevastel.com/algorithme/python/algorithmes%20g%C3%A9n%C3%A9tiques/2016/04/30/probleme-voyageur-commerce.html
 #### Linear programming
 https://towardsdatascience.com/linear-programming-and-discrete-optimization-with-python-using-pulp-449f3c5f6e99
+
 https://buildmedia.readthedocs.org/media/pdf/python-mip/latest/python-mip.pdf
+
 http://benalexkeen.com/linear-programming-with-python-and-pulp/
+
+https://www.linkedin.com/pulse/bin-packing-python-pulp-michael-basilyan
+
+https://coin-or.github.io/pulp/CaseStudies/a_blending_problem.html#
+
+https://pyomocontrib-simplemodel.readthedocs.io/en/latest/knapsack.html
+
+https://pythonhosted.org/PuLP/CaseStudies/a_sudoku_problem.html
 #### Merkle trees 
 https://tryalgo.org/fr/2016/12/10/arbres-de-merkle/
 #### Branch and Bound
@@ -344,11 +355,13 @@ https://docs.python.org/2/library/ctypes.html
     - **Chemin eurélien**:
     Passer une fois par chaques routes
     - **Poster chinois**:
-    Trouver le plus court chemin en passant au moins une fois par chaques routes
+    Trouver le plus court chemin en passant au moins une fois par chaques routes https://www.me.utexas.edu/~jensen/ORMM/supplements/units/net_methods/rel_net_lp.pdf
+    http://home.ubalt.edu/ntsbarsh/opre640A/partIII.htm#rsppr
     - **Voyageur de commerce**:
     Plus court chemin en visitant chaque sommet une seule fois
     - **Djikra**:
     Plus court chemin, possibilité de négatif
+    http://home.ubalt.edu/ntsbarsh/opre640A/partIII.htm#rsppr
 
 - **EXACT COVER**: Étant donné un ensemble U et une collection S  de sous-ensembles de U, une couverture exacte de U est une sous-collection S ∗  de S tel que tout élément de U est élément d'exactement un des ensembles de S ∗ En d'autres termes, une couverture exacte de U est une sous-collection S ∗  de S qui est une partition de U : les ensembles éléments de S ∗  sont disjoints deux à deux, et leur union est U. 
 
