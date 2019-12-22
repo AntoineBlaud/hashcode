@@ -98,9 +98,11 @@ set()
 map()
 lambda
 zip()
+filter()
+f.readline().strip().split(" ")
 ```
 
-### Numpy
+### Numpy (ne pas utiliser)
 ```
 https://numpy.org/doc/1.17/reference/routines.html
 https://numpy.org/doc/1.17/reference/routines.array-creation.html
@@ -114,6 +116,8 @@ https://numpy.org/doc/1.17/reference/routines.array-manipulation.html
 ```
 "Threading: 
 https://openclassrooms.com/fr/courses235344-apprenez-a-programmer-en-python/2235545-faites-de-la-programmation-parallele-avec-threading
+https://sebastianraschka.com/Articles/2014_multiprocessing.html
+https://www.ellicium.com/python-multiprocessing-pool-process/
 
 import threading
 
@@ -143,7 +147,7 @@ atexit.register(profile.print_stats)
 
 mettre @profile devant fonction
 ```
-#### Numba 
+#### Numba (ne pas utiliser )
 ```
 from numba.errors import NumbaDeprecationWarning, NumbaPendingDeprecationWarning
 import warnings
@@ -158,14 +162,11 @@ mettre @jit(nopython=True,parallel=True) devant fonction
 
 #### Conseils
 ```
-Pour la lecture de donné on peut rester en python des des listes et dic
-Pour l'écriture utiliser numpy sans numba
-Pour les autres boucles, utiliser njit
+Utiliser pypy !!!
 
 ```
 
-#### Utiliser numpy et matplolib !!
-https://docs.scipy.org/doc/numpy-1.13.0/reference/routines.html
+
 <br/>
 <hr>
 
@@ -212,8 +213,15 @@ fread(buffer, size, 1, f);
 
 ## Algorithmes
 
+**Choisir entre** :
+- glouton
+- dynamique
+- pulp
+- branch and bound
 
 
+<br/>
+<hr>
 
 #### Knuth-Morris-Pratt
 Permet de rechercher des motis dans une chaîne de caractère
@@ -278,9 +286,13 @@ http://www.xavierdupre.fr/app/ensae_teaching_cs/helpsphinx/specials/algorithm_cu
  - Analyse des fichiers (et des sous problèmes) + réflexion algorithmique
  - Récupération des données et organisation 
  - Conception de l'algorithme en essayant de le généraliser un maximum afin qu'avec de petites modifications il fonctionne sur tous les fichiers
- - Création de la visualisation , monitoring afin de surveiller la progression du score
+ - Savoir subdiviser le problème correctement
+ - Création de la visualisation et monitoring afin de surveiller la progression du score
+ - Optimiser à l'aide du profiler
  - Faire tourner l'algorithme en enregistrant les données dans des fichiers json
- - Finalement quand l'algo tourne, coder la sortie afin de soumettre le résultat
+ - Coder la sortie afin de soumettre le résultat
+
+ *Optimser pour pypy, si tableau totalement statique passer à numpy*
 
 <hr>
 
@@ -386,3 +398,43 @@ https://docs.python.org/2/library/ctypes.html
 - **JOB SEQUENCING**: *Un ensemble de taches avec des durées d'execution et des pénalités* (fait)
 
 - **PARTITION**: *Soit S un multiensemble d'entier naturel, on veut vérifier si il exsite une parition de S telle que la somme des éléments de S1 soit égale à celle de S2*
+
+
+#### Bases
+
+```
+import sys
+import os
+import time
+import argparse
+import re
+from copy import copy
+
+
+# Enlever pour pypy !
+######################################################################################
+import numpy as np
+import line_profiler
+import atexit
+profile = line_profiler.LineProfiler()
+atexit.register(profile.print_stats)
+from numba.errors import NumbaDeprecationWarning, NumbaPendingDeprecationWarning
+import warnings
+from numba import *
+
+warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
+warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning
+######################################################################################
+
+
+DEFAULT_F = ""
+OUTPUT_F = ""
+
+parser = argparse.ArgumentParser(description='Compute hashcode 2018 ride')
+parser.add_argument('-f','--file',help='Input file',default=DEFAULT_F,type=str)
+parser.add_argument('-o','--out',help='Ouput file',default=OUTPUT_F,type=str)
+parser.add_argument('-v','--verbose',default=-1,help='verbose mode',type=int)
+args = parser.parse_args()
+
+
+```

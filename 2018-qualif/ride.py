@@ -1,30 +1,18 @@
 import sys
 import os
-import pulp
-import numpy as np
 import time
 import argparse
 import re
-from queue import Queue
-from numba import jit
 from copy import copy
 
-######################################################################################
-import line_profiler
-import atexit
-profile = line_profiler.LineProfiler()
-atexit.register(profile.print_stats)
-from numba.errors import NumbaDeprecationWarning, NumbaPendingDeprecationWarning
-import warnings
-from numba import *
-
-warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
-warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 
 ######################################################################################
 
 
-defaultFile = "/home/darkloner99/code/Hashcode/Hashcode/2018-qualif/in/input1.in"
+######################################################################################
+
+
+defaultFile = "/home/darkloner99/code/Hashcode/Hashcode/2018-qualif/in/input2.in"
 OUTPUT_F = "/home/darkloner99/code/Hashcode/Hashcode/2018-qualif/out/results.txt"
 
 parser = argparse.ArgumentParser(description='Compute hashcode 2018 ride')
@@ -37,25 +25,30 @@ args = parser.parse_args()
 with open(args.file,"r") as f:
     rowsN,columsN,vehiculesN,ridesN,bonusV,constantFee,distanceFee,steps =  [int(x) for x in f.readline().strip().split(" ")]
     size = int(ridesN/0.4*vehiculesN)
-    ridesArr = np.ones((ridesN,7),dtype=int)
+    ridesArr = []
     for i in range(ridesN):
         # xe,ye,xs,ys,st,end
-        ridesArr[i] = [int(x) for x in f.readline().strip().split(" ")] + [i]
+        ridesArr.append([int(x) for x in f.readline().strip().split(" ")] + [i])
         
 if(args.verbose==0): print(ridesArr)
+
+
+
 
 def compute_upperbound(score,cabAvailableT,vx,vy,ridesArr:list,candidate):
     upperBound = score
     for rides in ridesArr:
         xe,ye,xs,ys,st,end,ID = map(int,rides)
-        P = abs(xs-xe) + abs(ys-ye)
-        Pbefore = max(cabAvailableT + abs(xe-vx) + abs(ye-vy),st)
-        # Si le vehicule peut respecter la deadline
-        if(Pbefore+P<=end and ID not in candidate): 
-            upperBound+=P*distanceFee+constantFee
-            # Si il peut respecter le bonus
-            if(Pbefore==st): upperBound+=bonusV
+        if(ID not in candidate):
+            P = abs(xs-xe) + abs(ys-ye)
+            Pbefore = max(cabAvailableT + abs(xe-vx) + abs(ye-vy),st)
+            # Si le vehicule peut respecter la deadline
+            if(Pbefore+P<=end ): 
+                upperBound+=P*distanceFee+constantFee
+                # Si il peut respecter le bonus
+                if(Pbefore==st): upperBound+=bonusV
     return upperBound
+
 
 
 def compute_rides(vx,vy,cabAvailableT,rides):
@@ -72,6 +65,7 @@ def compute_rides(vx,vy,cabAvailableT,rides):
     return score
 
 
+
 def a(vx,vy,cabAvailableT,rides):
     score = 0
     xe,ye,xs,ys,st,end,ID = map(int,rides)
@@ -85,12 +79,12 @@ def a(vx,vy,cabAvailableT,rides):
         if(Pbefore==st): score+=bonusV
     return score,newCabAvailableT,xs,ys
 
-
 def solve_cab(ridesArr):
 
     queue = []
     bestScore = 0
-    shapeX,shapeY = ridesArr.shape
+    bestCandidate = []
+    shapeX = len(ridesArr)
     upperboundArr = []
 
     if(shapeX>1):
@@ -122,6 +116,7 @@ def solve_cab(ridesArr):
         courses = candidate[1]
         u = compute_upperbound(scorep,cabAvailableT,vx,vy,ridesArr,candidate[1])
         upperboundArr.remove(u)
+        MAX = max(upperboundArr)
         if(len(queue)==0):
             return scorep,candidate
 
@@ -132,14 +127,18 @@ def solve_cab(ridesArr):
                 if(score>0):
                     score,cabAvailableT2,xs,ys =  a(vx,vy,cabAvailableT,r)
                     score+=scorep
-                    bestScore = max(score,bestScore)
-                    newCandidate = [];newCandidate.append([score,cabAvailableT2,xs,ys]);newCandidate.append(copy(courses));newCandidate[1].append(ID)
+                    newCandidate = []
+                    newCandidate.append([score,cabAvailableT2,xs,ys])
+                    newCandidate.append(courses + [ID])
                     u = compute_upperbound(score,cabAvailableT2,xs,ys,ridesArr,newCandidate[1])
+                    if(score>bestScore):
+                        bestScore = score
+                        bestCandidate = newCandidate
                     if(u > bestScore):
                         queue.append(newCandidate)
                         upperboundArr.append(u)
 
-                    if( (len(upperboundArr) ==0) or score>=max(upperboundArr)*0.80):
+                    if(score>=MAX):
                         return  score,newCandidate
     return (0,False)
 
@@ -155,7 +154,7 @@ def writeOut(carArr,SCORE):
 #Ici faire une boucle pur chaque vehicule et supprimer les courses prises
 SCORE = 0
 carArr = []
-ridesArr = ridesArr
+ridesArr = ridesArr[0:30]
 
 for car in range(vehiculesN):
     if(len(ridesArr)>0):
@@ -165,7 +164,7 @@ for car in range(vehiculesN):
         else:
             carArr.append([car] + candidate[1])
             SCORE+=score
-            ridesArr = np.asarray([ride for ride in ridesArr if ride[6] not in candidate[1]])
+            ridesArr = [ride for ride in ridesArr if ride[6] not in candidate[1]]
     sys.stdout.write("%d %d/%d       \r"%(SCORE,ridesN-len(ridesArr),ridesN))
     sys.stdout.flush()
     writeOut(carArr,SCORE)
