@@ -4,25 +4,33 @@ import pulp
 import numpy as np
 import re
 import argparse
+import collections
+import time
+import random
 
 parser = argparse.ArgumentParser(description='Hashcode 2017-----final')
 parser.add_argument("-v",action='store', dest='verbose',help='enable verbose')
 args = parser.parse_args()
  
 CHARLESTON_IN= "/home/darkloner99/code/Hashcode/Hashcode/2017-final/final_round_2017.in/charleston_road.in"
+OPERA_IN = "/home/darkloner99/code/Hashcode/Hashcode/2017-final/final_round_2017.in/opera.in"
+HIGH_IN = "/home/darkloner99/code/Hashcode/Hashcode/2017-final/final_round_2017.in/lets_go_higher.in"
+LONDON_IN = "/home/darkloner99/code/Hashcode/Hashcode/2017-final/final_round_2017.in/rue_de_londres.in"
 TEST_IN = "/home/darkloner99/code/Hashcode/Hashcode/2017-final/final_round_2017.in/test.In"
 CHARLESTON_ROUTER_OUT ="/home/darkloner99/code/Hashcode/Hashcode/2017-final/out/charleston_router.out"
 CHARLESTON_TARGET_OUT ="/home/darkloner99/code/Hashcode/Hashcode/2017-final/out/charleston_target.out"
+LONDON_OUT = "/home/darkloner99/code/Hashcode/Hashcode/2017-final/out/rue_de_londres.out"
+HIGH_OUT="/home/darkloner99/code/Hashcode/Hashcode/2017-final/out/lets_go_higher.out"
+OPERA_OUT = "/home/darkloner99/code/Hashcode/Hashcode/2017-final/out/opera.out"
 
-f = open(CHARLESTON_IN,"r")
+f = open(OPERA_IN,"r")
 M=100000
 rowsN, columsN, radius = map(int,[int(x) for x in re.sub("\n","",f.readline()).split(" ")])
 backboneP, routerP, budget =  map(int,[int(x) for x in re.sub("\n","",f.readline()).split(" ")])
 backboneX, backboneY = map(int,[int(x) for x in re.sub("\n","",f.readline()).split(" ")])
 # Reserver un budget pour les routeur et un budget pour les cables
 # Trouver compromis entre budget, nombre de cellule qui capte pour avoir meilleur score possible
-router_budget = 20000
-bone_budget = 20
+routerBudget = ((100-3*radius*backboneP)/100)*budget
 mapping=[]
 for i in range(rowsN):
     line = re.sub("\n","",f.readline());mapping.append([])
@@ -92,7 +100,7 @@ def process_router(mapping,router_budget,maxSeconds=None):
     prob+=pulp.lpSum([targetcell[(x,y)] for x in range(rowsN) for y in range(columsN) if mapping[x][y]==0]) == 0
     prob+=pulp.lpSum([targetcell[(x,y)] for x in range(rowsN) for y in range(columsN) if mapping[x][y]==2]) == 0
 
-    '''Retourne 1 si un mur bloque le passage des ondes entre la targetcell et le répeteur'''
+    #Retourne 1 si un mur bloque le passage des ondes entre la targetcell et le répeteur
     def check_wall(ti,tj,ri,rj):
         for j in range(min(rj,tj),max(rj,tj)+1):
             if(mapping[ri][j]==2): return 1
@@ -114,7 +122,6 @@ def process_router(mapping,router_budget,maxSeconds=None):
             z=0
             for xr in range(-radius,radius+1):
                 for yr in range(-radius,radius+1):
-
                     if(i+xr<0 or i+xr>=rowsN or j+yr<0 or j+yr>=columsN): prob+=pulp.lpSum(targetcell_receive[(i,j,z)]) ==0
                         # On vérifier qu'il n'y a pas de murs
                     elif(check_wall(i,j,i+xr,j+yr)==0):
@@ -123,8 +130,7 @@ def process_router(mapping,router_budget,maxSeconds=None):
                         # si mapping_router==0 alors targetcell_receive==0
                         prob+=pulp.lpSum([-mapping_router[(i+xr,j+yr)] +targetcell_receive[(i,j,z)]]) ==0
                     # Si il y a un mur alors la cellules ne recoit pas
-                    else:
-                        prob+=pulp.lpSum(targetcell_receive[(i,j,z)]) ==0
+                    else:prob+=pulp.lpSum(targetcell_receive[(i,j,z)]) ==0
                     z+=1
             # Si dans une seule sur les radius*radius possibilés on capte, alors on capte
             # <=> si la somme des receveurs >=1 then targetcell = 1 else targetcell = 0
@@ -145,26 +151,53 @@ def process_router(mapping,router_budget,maxSeconds=None):
     return (mapping,score)
 
 
+def compute(mapping):
+    global routerP;global radius;global routerBudget
 
-sectionX = 20;sectionY = 20
-crossingX = int(columsN/sectionX);crossingY = int(rowsN/sectionY)
-budgetPerStep = 400
-x=0;y=0;SCORE = 0
-mapping = np.asarray(mapping)
+    sectionX = 2*radius;sectionY = 4*radius
+    crossingX = int(rowsN/sectionX);crossingY = int(columsN/sectionY)
+    customerN=0
+    for x in range(0,len(mapping)): customerN += mapping[x].count(1)
+    x=0;y=0;SCORE = 0
+    mapping = np.asarray(mapping)
+    TOTAL=0
 
-print("\n----Starting resolution ----\n")
-while (x<crossingX):
-    while(y<crossingY):
-        mapp =  mapping[x*sectionX:min((x+1)*sectionX,rowsN),y*sectionY:min((y+1)*sectionY,columsN)]
-        (mapp,score) = process_router(mapp,budgetPerStep,10)
-        mapping[x*sectionX:min((x+1)*sectionX,rowsN),y*sectionY:min((y+1)*sectionY,columsN)] = mapp
-        SCORE+=score;y+=1
-        sys.stdout.write(" %s/%s\r"%(y*sectionY,columsN));sys.stdout.flush()
+    print("\n---- Starting router resolution ----\n")
+    startingTime = time.time()
+    while (x<crossingX):
+        while(y<crossingY):
+            mapp =  mapping[x*sectionX:min((x+1)*sectionX,rowsN),y*sectionY:min((y+1)*sectionY,columsN)]
+            # compute budget for the step
+            customerX = 0;score = 0
+            # convertir pour numpy
+            for c in range(0,len(mapp)): customerX +=  mapp[c].tolist().count(1)
+            #coeff =  (((customerX/customerN)*(budget*((100-3*backboneP*radius)/100))))
+            coeff=1.1
+            stepBudget= (customerX*coeff//(2*radius*2*radius))*routerP
+            if(stepBudget>=routerP and (TOTAL+stepBudget)<routerBudget):
+                TOTAL+=stepBudget
+                (mapp,score) = process_router(mapp,stepBudget,5)
+                mapping[x*sectionX:min((x+1)*sectionX,rowsN),y*sectionY:min((y+1)*sectionY,columsN)] = mapp
+            SCORE+=score;y+=1
+            sys.stdout.write(" %s/%s\r"%(y*sectionY,columsN));sys.stdout.flush()
 
-    x+=1;y=0;print("\nstep %d terminated,  score: %d" % (x, SCORE))
-    # Write output
-    write_output(CHARLESTON_ROUTER_OUT,mapping[:x*sectionX])
 
+        x+=1;y=0;print("\nstep %d terminated,  estimated score: %d, cost: %d, elapsed_time %d" % (x, SCORE, TOTAL,time.time()-startingTime))
+        # Write output
+        write_output(OPERA_OUT,mapping[:x*sectionX])
+
+def stats(mapping):
+
+    global routerP; global radius
+    customerN=0
+    for x in range(0,len(mapping)): customerN += mapping[x].count(1)
+    routerN = customerN/(2*radius)**2
+    pRouter = routerN*routerP
+    print("routerN: %d  router total P: %d"%(routerN,pRouter))
+    
+
+compute(mapping)
+#stats(mapping)
 
 
 print("end")
