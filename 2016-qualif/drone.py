@@ -40,6 +40,8 @@ items = {}
 warehouses = []
 # Orders
 orders = []
+# Chaine de caractere qu'on de vrai ecrire a la fin
+OUTPUT_B = ""
 
 ##########################################
 
@@ -87,7 +89,7 @@ class Order:
         return i in self.order
     
     def removeProduct(self,i):
-        self.products.remove(i)
+        self.products[i] = 0
         self.q-=1
 
     def __str__(self):
@@ -95,6 +97,45 @@ class Order:
 
     def __repr__(self):
         return "O_%d_%d_%d"%(self.x,self.y,self.q)
+
+    def __len__(self):
+        return len([x for x in self.products if x==1])
+
+
+class Drone:
+    def __init(self,c,id):
+        self.c = c
+        self.x = 0
+        self.y = 0
+        self.id = id
+        self.items = {}
+        self.Tavailable = 0
+
+    def move(self,x,y):
+        self.x = x
+        self.y = y
+    
+    def getPos(self):
+        return self.x,self.y
+
+    def load(self,object, q):
+        if(object in self.items.keys()):
+            self.items[object]+=q
+            c-=c*items[object]
+        else:
+            self.items[object]=q
+            c-=c*items[object]
+
+    def unload(self,object,q):
+        self.items[object]-=q
+        c+=c*items[object]
+
+    def getQuantity(self,object):
+        if(object in self.items.keys()): return self.items[object]
+        return 0
+
+
+
 
 
 # Read input file and create var.
@@ -197,25 +238,48 @@ def rangeOrdersPerInterest(warehouses:list,orders:list,dronesN:int):
 
     return ordersPerProximityToWarehouse
 
+def foundBestInterestingDrone(drones:list,idP,order:Order):
+    # Trouve le drone le plus intéressent pour aller faire une livraison
+    pass
 
-def processDelivery(orderSorted,dronesN):
-    for order in orderSorted:
-        pass
+
+def deliverProduct(drone:Drone,Order:order,idP):
+    # ici on gere aussi load , wait etc...
+    pass
+
+def dronesDispo(drones:list):
+    # si temsp de simulation pour chaque drone > temps max alors return false
+    pass
 
 
+
+
+def processDelivery(orderSorted,drones):
+    # Attention, il peut y avoir plusieurs fois la même commande dans la liste orderSorted
+    while(len(orderSorted)> 0 and dronesDispo(drones)):
+        order = orderSorted.pop()
+        if(len(order)>0):
+            for id,q in zip(order.products,range(itemN)):
+                drone = foundBestInterestingDrone(drones,id,order)
+                if(drone!=False):
+                    deliverProduct(drone,Order,id)
+
+
+                
 
 
 temp =  rangeOrdersPerInterest(warehouses,orders,dronesN)
 # on transforme en un tableau a une seule dimension
-ordersSorted = []
+orderSorted = []
 for l in temp: 
-    for e in l: ordersSorted.append(e)
+    for e in l: orderSorted.append(e)
 
-
-
-
-
-
+drones = []
+for i in range(dronesN):
+    drones.append(Drone(payload,i))
 
 if(args.verbose==1):
-    print(ordersSorted)
+    print(orderSorted)
+
+
+processDelivery(orderSorted,drones)
