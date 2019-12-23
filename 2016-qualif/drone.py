@@ -12,7 +12,6 @@ from random import *
         scoring 
 '''
 
-
 ######################################################################################
 import line_profiler
 import atexit
@@ -20,8 +19,7 @@ profile = line_profiler.LineProfiler()
 atexit.register(profile.print_stats)
 ######################################################################################
 
-
-DEFAULT_F = "/home/darkloner99/code/Hashcode/Hashcode/2016-qualif/qualification_round_2016.in/busy_day.in"
+DEFAULT_F = "/home/darkloner99/code/Hashcode/Hashcode/2016-qualif/qualification_round_2016.in/exemple.in"
 OUTPUT_F =  "/home/darkloner99/code/Hashcode/Hashcode/2016-qualif/out/result.txt"
 
 parser = argparse.ArgumentParser(description='Compute hashcode 2018 ride')
@@ -29,9 +27,6 @@ parser.add_argument('-f','--file',help='Input file',default=DEFAULT_F,type=str)
 parser.add_argument('-o','--out',help='Ouput file',default=OUTPUT_F,type=str)
 parser.add_argument('-v','--verbose',default=-1,help='verbose mode',type=int)
 args = parser.parse_args()
-
-
-
 
 ##########################################
 # items weight
@@ -42,7 +37,8 @@ warehouses = []
 orders = []
 # Chaine de caractere qu'on de vrai ecrire a la fin
 OUTPUT_B = ""
-
+# Commande completés
+orderCompleted = []
 ##########################################
 
 # convert line to integer. 
@@ -52,8 +48,6 @@ def lineToMap(f):
 # convert line to a list of  integer.
 def lineToList(f):
     return list(map(int,f.readline().strip().split(" ")))
-
-
 
 class Warehouse:
     def __init__(self,x,y,id):
@@ -68,6 +62,8 @@ class Warehouse:
         if(self.products[i] - q >=0): self.products[i]-=q;return True
         return False
 
+    def getQ(self,idP):
+        return self.products[idP]
     def __str__(self):
         return "W_%d_%d"%(self.x,self.y)
 
@@ -81,6 +77,7 @@ class Order:
         self.y = y
         self.q = q
         self.id = id
+        self.completed = None
 
     def setProductsOrder(self,products: list):
         self.products = products
@@ -88,9 +85,9 @@ class Order:
     def inOrder(self,i:int):
         return i in self.order
     
-    def removeProduct(self,i):
-        self.products[i] = 0
-        self.q-=1
+    def removeProduct(self,i,q):
+        self.products[i]-= q
+        self.q-=q
 
     def __str__(self):
         return "O_%d_%d_%d"%(self.x,self.y,self.q)
@@ -103,7 +100,7 @@ class Order:
 
 
 class Drone:
-    def __init(self,c,id):
+    def __init__(self,c,id):
         self.c = c
         self.x = 0
         self.y = 0
@@ -118,24 +115,26 @@ class Drone:
     def getPos(self):
         return self.x,self.y
 
-    def load(self,object, q):
+    def load(self,idP, q):
         if(object in self.items.keys()):
-            self.items[object]+=q
-            c-=c*items[object]
+            self.items[idP]+=q
+            c-=c*items[idP]
         else:
-            self.items[object]=q
-            c-=c*items[object]
+            self.items[idP]=q
+            c-=c*items[idP]
 
-    def unload(self,object,q):
-        self.items[object]-=q
-        c+=c*items[object]
+    def unload(self,idP,q):
+        self.items[idP]-=q
+        c+=c*items[idP]
 
-    def getQuantity(self,object):
-        if(object in self.items.keys()): return self.items[object]
+    def getQuantity(self,idP):
+        if(idP in self.items.keys()): return self.items[object]
         return 0
 
-
-
+    def inDrone(self,idP):
+        if(idP in self.items.keys()):
+            return self.items[idP]
+        return 0
 
 
 # Read input file and create var.
@@ -162,13 +161,6 @@ with open(args.file,"r") as f:
         orders.append(o)
 
 
-# Params 
-##########################################
-R = 100
-
-
-##########################################
-
 if(args.verbose == 0):   
     print(warehouses)
     print(items)
@@ -179,6 +171,26 @@ def distance(x1,y1,x2,y2):
     return sqrt(abs(x1-x2)**2 + abs(y1-y2)**2)
 
 
+def foundOptimumR(warehouses,orders):
+    #Permet de trouver le rayon optimal des livraisons autour des entrepôts.
+    cover = 0
+    rT = 0
+    for r in range(1,min(rowsN,columnsN)):
+        ordersPerW = []
+        for warehouse in warehouses:
+            for e in getOrderAtProximity(warehouse,orders,r):
+                ordersPerW.append(e)
+        ordersPerWuniq = set(ordersPerW)
+        if((len(ordersPerWuniq)/len(orders))>0.7 and (len(ordersPerW)/len(orders))<=1.4):
+            return r
+        elif (len(ordersPerWuniq)/len(orders))>cover and (len(ordersPerW)/len(orders))<=1.4:
+            rT = r
+            cover = len(ordersPerWuniq)/len(orders)
+    return rT
+
+
+
+
 def getOrderAtProximity(w,orders, r):
     # Retourne toutes les commandes dans un rayon r autour d'un entrepot.
     ordersAtProximity = []
@@ -187,7 +199,7 @@ def getOrderAtProximity(w,orders, r):
     for order in orders:
         xo = order.x
         yo = order.y
-        if(distance(xo,yo,xw,yw)<R): ordersAtProximity.append(order)
+        if(distance(xo,yo,xw,yw)<r): ordersAtProximity.append(order)
     return ordersAtProximity
 
 
@@ -227,44 +239,124 @@ def rangeOrdersPerInterest(warehouses:list,orders:list,dronesN:int):
         wt,yt = w.x,w.y
     
     # 3. Réeordonner les commandes suivant warehousePath
-    
     warehousesPath = [w.id for w in warehousesPath]
     ordersPerProximityToWarehouse = [copy(ordersPerProximityToWarehouse[i]) for i in warehousesPath]
-
     # 4. A l'intérieur des packet on melange de maniere aléatoire
     for listO in ordersPerProximityToWarehouse:
         listO = shuffle(listO)
-    
 
     return ordersPerProximityToWarehouse
 
-def foundBestInterestingDrone(drones:list,idP,order:Order):
-    # Trouve le drone le plus intéressent pour aller faire une livraison
-    pass
 
 
-def deliverProduct(drone:Drone,Order:order,idP):
+def foundClosestWharehouse(drone,idP, q):
+    global warehouses
+    # Ici meilleur entrepot mais qui n'a pas tout les élements
+    bestQ0D = columnsN + rowsN
+    bestQ0Q = 0
+    bestQ0 = False
+    # Ici meilleur entrepot avec assez de produit en stock 
+    bestQ1D = columnsN + rowsN
+    bestQ1 = False
+    for w in warehouses:
+        d = distance(w.x,w.y,drone.x,drone.y) + drone.Tavailable
+        # Si dans l'entrepot il y a une quantité suffisante et la distance est meilleur
+        if(w.getQ(idP)>=q and bestQ1D>d):
+            bestQ1D = d
+            bestQ1 = w
+
+        # Sinon on enregistre la meilleur solution
+        if(w.getQ(idP)>=bestQ0Q  and bestQ0D>d):
+            bestQ0D = d
+            bestQ0 = w
+            bestQ1Q = w.getQ(idP)
+
+    # Ici pareil que pour drone modifier
+    if(bestQ1):
+        return bestQ1,q
+    return bestQ0, bestQ0Q
+
+        
+    
+
+def foundBestInterestingDrone(order,drones,idP,q):
+    # Retourne le drone le plus intéressent 
+    global diMax,qiMax
+    distances =  {}
+    xo = order.x
+    yo = order.y
+    i = 0
+    for drone in drones:
+        xd = drone.x
+        yd = drone.y
+        # Quantité du produit dans le drone
+        qInDrone = drone.inDrone(idP)
+        # Si la quantité de produit dans le drone est suffisante
+        if(qInDrone>=q):
+            d = distance(xo,yo,xd,yd) + drone.Tavailable
+            q2 = q
+        else:
+            w,q2 = foundClosestWharehouse(drone,idP,q-qInDrone)
+            if(q2==q):
+                d = distance(xo,yo,w.x,w.y) + distance(w.x,w.y,drone.x,drone.y) + drone.Tavailable
+
+        distances[i] = (d, q2)
+
+    droneSorted = dict(sorted(distances.items()[0], key=lambda t: t[1]))
+    best = list(droneSorted.keys())
+
+    # Ici modifier pour peut etre preférer passer par un entrepot suivant le contenu des drones
+    # si ils ont tous les produits ou non etc...
+    (di, qi) = distance[best[0]]
+    if(di<diMax and (q-qi)<qiMax):
+        return drones[di]
+    return False
+    
+
+def deliverProduct(drone:Drone,order:Order,idP):
     # ici on gere aussi load , wait etc...
-    pass
+    # changer completed 
+    if(len(order)==0):
+            if(order not in orderCompleted):
+                pass
+
 
 def dronesDispo(drones:list):
-    # si temsp de simulation pour chaque drone > temps max alors return false
+    # si temps de simulation pour chaque drone > temps max alors return false
+    for drone in drones:
+        if(drone.Tavailable<turnN):
+            return True
+
+
+def closeOrder(order):
     pass
-
-
 
 
 def processDelivery(orderSorted,drones):
+    global orderCompleted
     # Attention, il peut y avoir plusieurs fois la même commande dans la liste orderSorted
     while(len(orderSorted)> 0 and dronesDispo(drones)):
         order = orderSorted.pop()
+        # Si la commande a encore des articles
         if(len(order)>0):
             for id,q in zip(order.products,range(itemN)):
-                drone = foundBestInterestingDrone(drones,id,order)
-                if(drone!=False):
-                    deliverProduct(drone,Order,id)
+                if(q>0):
+                    # Recuperer drone le plus interessant pour livrer 
+                    drone = foundBestInterestingDrone(drones,id,order)
+                    # Si la livraison est interessente
+                    if(drone!=False):
+                        deliverProduct(drone,Order,id)
 
+        
 
+            
+
+# Params 
+##########################################
+R = foundOptimumR(warehouses,orders)
+diMax = 10
+qiMax = 10
+##########################################
                 
 
 
@@ -282,4 +374,5 @@ if(args.verbose==1):
     print(orderSorted)
 
 
-processDelivery(orderSorted,drones)
+#processDelivery(orderSorted,drones)
+
