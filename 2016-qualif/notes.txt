@@ -1,0 +1,12 @@
+dictionaire (ID) -> poid
+wharehouse = [(1,4),(3,4),(5,4)]   ->(item ID, quantité)
+
+wharehousePos = [(x1,y1),(x2,y2), ....]
+orderPos = [(x1,y1),(x2,y2),.....]
+order = [(1,2),(3,4),(5,4)]
+
+class drone
+    x
+    y
+    item
+    poid restant
