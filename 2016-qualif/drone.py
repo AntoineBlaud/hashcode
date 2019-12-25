@@ -445,9 +445,9 @@ def process(orderSorted,drones,warehouses):
 ##########################################
 R = foundOptimumR(warehouses,orders)
 SCORE = 0
-diMax = 50
-Pass = 2
-curveCoeff = 10
+diMax = 0
+Pass = 0
+curveCoeff = 0
 SIMUL_TIME = 100
 
 ##########################################
