@@ -147,6 +147,12 @@ atexit.register(profile.print_stats)
 
 mettre @profile devant fonction
 ```
+
+#### Memory usage
+```
+from guppy import hpy; h=hpy()
+h.heap()
+```
 #### Numba (ne pas utiliser )
 ```
 from numba.errors import NumbaDeprecationWarning, NumbaPendingDeprecationWarning

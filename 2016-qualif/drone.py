@@ -3,9 +3,11 @@ import os
 import time
 import argparse
 import re
-from copy import copy
+from copy import copy,deepcopy
 from math import *
 from random import *
+from guppy import hpy; h=hpy()
+
 
 '''
 @ Loic: ajuster R (rayon) suivant nombre de drone et valeur incluses
@@ -13,13 +15,10 @@ from random import *
 '''
 
 ######################################################################################
-import line_profiler
-import atexit
-profile = line_profiler.LineProfiler()
-atexit.register(profile.print_stats)
+
 ######################################################################################
 
-DEFAULT_F = "/home/darkloner99/code/Hashcode/Hashcode/2016-qualif/qualification_round_2016.in/exemple.in"
+DEFAULT_F = "/home/darkloner99/code/Hashcode/Hashcode/2016-qualif/qualification_round_2016.in/redundancy.in"
 OUTPUT_F =  "/home/darkloner99/code/Hashcode/Hashcode/2016-qualif/out/result.txt"
 
 parser = argparse.ArgumentParser(description='Compute hashcode 2018 ride')
@@ -57,10 +56,15 @@ class Warehouse:
 
     def setProductList(self,products:list):
         self.products = products
+        for i in range(itemN-len(products)):
+            self.products.append(0)
+
     
-    def getProduct(self,i:int,q:int):
+    def loadProduct(self,i:int,q:int):
         if(self.products[i] - q >=0): self.products[i]-=q;return True
         return False
+    def unloadProduct(self,idP,q):
+        self.products[idP]+=q
 
     def getQ(self,idP):
         return self.products[idP]
@@ -70,6 +74,13 @@ class Warehouse:
     def __repr__(self):
         return "W_%d_%d"%(self.x,self.y)
 
+    def __len__(self):
+        t = 0
+        for x in self.products: t+=x
+        return t
+
+
+
 
 class Order:
     def __init__(self,x,y,q,id):
@@ -77,13 +88,15 @@ class Order:
         self.y = y
         self.q = q
         self.id = id
-        self.completed = None
+        self.completed = False
 
     def setProductsOrder(self,products: list):
-        self.products = products
+        self.products = [0 for x in range(itemN)]
+        for x in products:
+           self.products[x]+=1
     
     def inOrder(self,i:int):
-        return i in self.order
+        return i in self.products
     
     def removeProduct(self,i,q):
         self.products[i]-= q
@@ -116,16 +129,16 @@ class Drone:
         return self.x,self.y
 
     def load(self,idP, q):
-        if(object in self.items.keys()):
+        if(idP in self.items.keys()):
             self.items[idP]+=q
-            c-=c*items[idP]
+            self.c-=q*items[idP]
         else:
             self.items[idP]=q
-            c-=c*items[idP]
+            self.c-=items[idP]
 
     def unload(self,idP,q):
         self.items[idP]-=q
-        c+=c*items[idP]
+        self.c+=q*items[idP]
 
     def getQuantity(self,idP):
         if(idP in self.items.keys()): return self.items[object]
@@ -135,6 +148,8 @@ class Drone:
         if(idP in self.items.keys()):
             return self.items[idP]
         return 0
+
+
 
 
 # Read input file and create var.
@@ -168,7 +183,9 @@ if(args.verbose == 0):
 
 
 def distance(x1,y1,x2,y2):
-    return sqrt(abs(x1-x2)**2 + abs(y1-y2)**2)
+    d  = sqrt(abs(x1-x2)**2 + abs(y1-y2)**2)
+    if(int(d) == d): return d
+    return int(d)+1
 
 
 def foundOptimumR(warehouses,orders):
@@ -181,7 +198,7 @@ def foundOptimumR(warehouses,orders):
             for e in getOrderAtProximity(warehouse,orders,r):
                 ordersPerW.append(e)
         ordersPerWuniq = set(ordersPerW)
-        if((len(ordersPerWuniq)/len(orders))>0.7 and (len(ordersPerW)/len(orders))<=1.4):
+        if((len(ordersPerWuniq)/len(orders))>0.8 and (len(ordersPerW)/len(orders))<=1.4):
             return r
         elif (len(ordersPerWuniq)/len(orders))>cover and (len(ordersPerW)/len(orders))<=1.4:
             rT = r
@@ -249,17 +266,17 @@ def rangeOrdersPerInterest(warehouses:list,orders:list,dronesN:int):
 
 
 
-def foundClosestWharehouse(drone,idP, q):
-    global warehouses
+def foundClosestWharehouseContainingItem(drone, order,warehouses, idP, q):
+    # Retourne l'entrepot le plus sur la route contenant la maximun d'item voulu
     # Ici meilleur entrepot mais qui n'a pas tout les élements
     bestQ0D = columnsN + rowsN
     bestQ0Q = 0
-    bestQ0 = False
+    bestQ0 = warehouses[randint(0,len(warehouses)-1)]
     # Ici meilleur entrepot avec assez de produit en stock 
     bestQ1D = columnsN + rowsN
-    bestQ1 = False
+    bestQ1 = warehouses[randint(0,len(warehouses)-1)]
     for w in warehouses:
-        d = distance(w.x,w.y,drone.x,drone.y) + drone.Tavailable
+        d = distance(w.x,w.y,drone.x,drone.y) + distance(w.x,w.y,order.x,order.y) + drone.Tavailable
         # Si dans l'entrepot il y a une quantité suffisante et la distance est meilleur
         if(w.getQ(idP)>=q and bestQ1D>d):
             bestQ1D = d
@@ -269,19 +286,30 @@ def foundClosestWharehouse(drone,idP, q):
         if(w.getQ(idP)>=bestQ0Q  and bestQ0D>d):
             bestQ0D = d
             bestQ0 = w
-            bestQ1Q = w.getQ(idP)
+            bestQ0Q = w.getQ(idP)
 
     # Ici pareil que pour drone modifier
-    if(bestQ1):
-        return bestQ1,q
-    return bestQ0, bestQ0Q
+    if(bestQ1!=False):
+        return bestQ1,bestQ1D
+    return bestQ0, bestQ0D
 
-        
-    
 
-def foundBestInterestingDrone(order,drones,idP,q):
+def foundClosestWharehouseOnTheRoad(drone:Drone,order:Order,warehouses):
+    # Retourne l'entrepot le plus sur la route
+    best = warehouses[randint(0,warehouseN-1)]
+    bestd = distance(drone.x,drone.y,best.x,best.y) + distance(best.x,best.y,order.x,order.y)
+    for w in warehouses:
+        d = distance(drone.x,drone.y,w.x,w.y) + distance(w.x,w.y,order.x,order.y)
+        if( d<bestd and len(w)>0):
+            best = w
+            bestd = d
+    return best,bestd
+
+
+
+def foundBestInterestingDrone(drones,order,idP,q,warehouses):
     # Retourne le drone le plus intéressent 
-    global diMax,qiMax
+    global diMax
     distances =  {}
     xo = order.x
     yo = order.y
@@ -289,73 +317,139 @@ def foundBestInterestingDrone(order,drones,idP,q):
     for drone in drones:
         xd = drone.x
         yd = drone.y
+        d = rowsN + columnsN
         # Quantité du produit dans le drone
         qInDrone = drone.inDrone(idP)
         # Si la quantité de produit dans le drone est suffisante
         if(qInDrone>=q):
-            d = distance(xo,yo,xd,yd) + drone.Tavailable
-            q2 = q
+            d = distance(xo,yo,xd,yd)  + drone.Tavailable
         else:
-            w,q2 = foundClosestWharehouse(drone,idP,q-qInDrone)
-            if(q2==q):
+            w,q2 = foundClosestWharehouseContainingItem(drone,order,warehouses,idP,q-qInDrone)
+            if(q2>=q):
                 d = distance(xo,yo,w.x,w.y) + distance(w.x,w.y,drone.x,drone.y) + drone.Tavailable
 
-        distances[i] = (d, q2)
+        distances[i] = (d, i)
+        i+=1
 
-    droneSorted = dict(sorted(distances.items()[0], key=lambda t: t[1]))
+    droneSorted = dict(sorted(distances.items(), key=lambda t: t[1][0]))
     best = list(droneSorted.keys())
 
-    # Ici modifier pour peut etre preférer passer par un entrepot suivant le contenu des drones
-    # si ils ont tous les produits ou non etc...
-    (di, qi) = distance[best[0]]
-    if(di<diMax and (q-qi)<qiMax):
-        return drones[di]
+    (di, i) = distances[best[0]]
+    if(di<diMax):
+        return drones[i]
     return False
+
+
+def makeDeliver(drone:Drone,order:Order,w,idP,q):
+
+    # Ici on vide le drone de tout les items qui ne sont pas dans la commande
+    for k,v in drone.items.items():
+        if(not order.inOrder(k)):
+            drone.unload(k,v)
+            w.unloadProduct(k,v)
     
+    # On remplit le drone de l'item voulu en priorité
+    for i in range(q):
+        inWarehouse = w.getQ(idP)
+        if(inWarehouse > q):
+            if(drone.c > items[idP]):
+                drone.load(idP,1)
+                w.loadProduct(idP,1)
 
-def deliverProduct(drone:Drone,order:Order,idP):
-    # ici on gere aussi load , wait etc...
-    # changer completed 
-    if(len(order)==0):
-            if(order not in orderCompleted):
-                pass
+    # Ensuite on remplit d'autre article de la commande 
+    for v,k in zip(order.products,range(itemN)):
+        for i in range(v):
+            if(drone.c > items[k] and drone.inDrone(k)<=v):
+                    drone.load(k,1)
+                    if(w.getQ(k)>0):
+                        w.loadProduct(idP,1)
+    
+    # Ensuite on remplit le drone d'item qui ne sont pas dans la commande mais qui sont dans l'entrepot
+    for v,k in zip(w.products,range(itemN)):
+        for i in range(v):
+            if(drone.c > items[k] and drone.inDrone(k)<=M):
+                    drone.load(k,1)
+                    w.loadProduct(k,1)
+
+    # Ici on livre
+    for k,v in drone.items.items():
+        for i in range(v): 
+            if(order.products[k]>0):
+                drone.unload(k,1)
+                order.removeProduct(k,1)
 
 
+
+
+def deliverProduct(drone:Drone,order:Order,warehouses,idP,q):
+    # ici le drone est deja choisi, on choisi donc maintenand l'entrepot
+    global SCORE
+    di = distance(drone.x,drone.y,order.x,order.y)
+    qd = drone.inDrone(idP)
+    wc,dc = foundClosestWharehouseOnTheRoad(drone,order,warehouses)
+    if(q-qd>0):
+        wp,dp = foundClosestWharehouseContainingItem(drone,order,warehouses,idP,q-qd)
+        if(dp < curveCoeff*dc):
+            wc,dc = wp,dp
+
+    drone.Tavailable+=dc
+    makeDeliver(drone,order,wc,idP,q-qd)
+    drone.x  = order.x
+    drone.y = order.y
+
+    if(len(order)==0 and order.completed==False):
+        order.completed = True
+        SCORE+= ((turnN-drone.Tavailable)/turnN)*100
+            
+
+        
 def dronesDispo(drones:list):
     # si temps de simulation pour chaque drone > temps max alors return false
     for drone in drones:
         if(drone.Tavailable<turnN):
             return True
 
+def calculateAverageProductOrder(orderSorted):
+    x = 0
+    i = 0
+    for order in orderSorted:
+        for item in order.products:
+            if(item>0):
+                i+=1
+                x+=item
+    return int(x/i) +  1
 
-def closeOrder(order):
-    pass
 
 
-def processDelivery(orderSorted,drones):
-    global orderCompleted
+
+def process(orderSorted,drones,warehouses):
     # Attention, il peut y avoir plusieurs fois la même commande dans la liste orderSorted
     while(len(orderSorted)> 0 and dronesDispo(drones)):
         order = orderSorted.pop()
         # Si la commande a encore des articles
-        if(len(order)>0):
-            for id,q in zip(order.products,range(itemN)):
-                if(q>0):
-                    # Recuperer drone le plus interessant pour livrer 
-                    drone = foundBestInterestingDrone(drones,id,order)
-                    # Si la livraison est interessente
-                    if(drone!=False):
-                        deliverProduct(drone,Order,id)
+        if(not order.completed):
+            for i in range(0,Pass):
+                for idP,q in zip(range(itemN),order.products):
+                    if(q>0):
+                        # Recuperer drone le plus interessant pour livrer 
+                        drone = foundBestInterestingDrone(drones,order,idP,q,warehouses)
+                        # Si la livraison est interessente
+                        if(drone!=False):
+                            deliverProduct(drone,order,warehouses,idP,q)
+
+
 
         
-
-            
 
 # Params 
 ##########################################
 R = foundOptimumR(warehouses,orders)
-diMax = 10
-qiMax = 10
+SCORE = 0
+diMax = 50
+Pass = 2
+curveCoeff = 10
+SIMUL_TIME = 100
+
 ##########################################
                 
 
@@ -373,6 +467,16 @@ for i in range(dronesN):
 if(args.verbose==1):
     print(orderSorted)
 
+# moyenne produit
+M = calculateAverageProductOrder(orderSorted)
 
-#processDelivery(orderSorted,drones)
+# Regler Params pour trouver le meilleur 
+for i in range(SIMUL_TIME):
+    diMax = randint(5,turnN)
+    Pass = randint(1,10)
+    curveCoeff =  randint(2,20)
+    
+    process(deepcopy(orderSorted),deepcopy(drones),deepcopy(warehouses))
+    print("Score:%d  R:%d diMax:%d pass: %d curveCoeff: %d"%(SCORE,R,diMax,Pass,curveCoeff))
+    SCORE = 0
 
