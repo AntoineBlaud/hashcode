@@ -1,9 +1,9 @@
 {
-    "python.formatting.provider": "black",
+    "python.formatting.provider": "autopep8",
     "files.associations": {
         "json.h": "c"
     },
-    "python.pythonPath": "/usr/bin/python3",
+    "python.pythonPath": "C:\\Users\\antoi\\AppData\\Local\\Programs\\Python\\Python35\\python.exe",
     "python.testing.pytestArgs": [
         "."
     ],
