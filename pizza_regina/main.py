@@ -112,15 +112,22 @@ def save(pizza, slices, file):
         pickle.dump(out, f)
     return out
 
-
+'''
+Transforme une liste de liste en liste
+'''
 def join_slices(slices_list):
     return reduce(lambda x, y: x+y, slices_list)
 
-
+'''
+Exécute l'algorithme de résolution sur une map(grand part):  one step 
+'''
 def compute_single_map(args):
     mapping, min_ing, max_cell, pizza, step = args
+    # Trouve toutes les combinaisons de part valide
     combinations = find_all_combination(mapping, min_ing, max_cell, pizza)
+    # Sélectionne les part de manière à maximiser le nombre de cellules
     slice_out, cell_out = solve_combination(combinations, mapping)
+    # Affiche la fin de l'étape
     lock = multiprocessing.RLock()
     with lock:
         sys.stdout.write(str("Step ") + str(step)+" done!   "+'\r')
@@ -162,7 +169,7 @@ if __name__ == '__main__':
     print("Splitting pizza.....")
     mappings = pizza.split_pizza_into_map(args.rect_size_x, args.rect_size_y)
     p = multiprocessing.Pool(multiprocessing.cpu_count())
-    print("Starting solving slice (can take a very long time, depends rect_size_x,rect_size_y and pizza area !)...")
+    print("Starting solving slice (can take a very long time, depends rect_size_x,rect_size_y and pizza size !)...")
     print("Must compute %d steps" % len(mappings))
     slice_list = p.map(compute_single_map,[( m, min_ing, max_cell, pizza, i) for m,i in zip(mappings,range(len(mappings)))] )
     p.close()
@@ -170,5 +177,5 @@ if __name__ == '__main__':
     slice_out = join_slices(slice_list)
     print("Writing output file in pickle format")
     data = save(pizza, slice_out, args.fileout)
-    show_pizza_output(data)
     print("finish at: "+ str(datetime.datetime.now()))
+    show_pizza_output(data)
