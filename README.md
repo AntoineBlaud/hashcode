@@ -323,13 +323,7 @@ https://docs.python.org/2/library/ctypes.html
 
 <hr>
 
-## Emploi du Temps
 
-**Semaine du 17/11**:  Comprendre les 21 problèmes combinatoire et explorer leurs solutions +  Apprendre tout de numpy, multiprocessing, threading, matplotlib
-
-**Semaine du 24/11 au 8/12**: Faire youtube hashcode
-
-<hr>
 
 ## 21 Problèmes combinatoires
 
