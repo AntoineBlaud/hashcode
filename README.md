@@ -98,6 +98,8 @@ set()
 map()
 lambda
 zip()
+enumerate()
+extend()
 filter()
 f.readline().strip().split(" ")
 ```
