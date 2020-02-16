@@ -415,32 +415,36 @@ import time
 import argparse
 import re
 from copy import copy
-
-
-# Enlever pour pypy !
-######################################################################################
+import pulp
+from functools import reduce
+import pickle
+import multiprocessing
 import numpy as np
+import random
+import matplotlib.pyplot as plt
+import datetime
+######################################################################################
 import line_profiler
 import atexit
 profile = line_profiler.LineProfiler()
 atexit.register(profile.print_stats)
-from numba.errors import NumbaDeprecationWarning, NumbaPendingDeprecationWarning
-import warnings
-from numba import *
-
-warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
-warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning
 ######################################################################################
 
 
-DEFAULT_F = ""
-OUTPUT_F = ""
 
-parser = argparse.ArgumentParser(description='Compute hashcode 2018 ride')
-parser.add_argument('-f','--file',help='Input file',default=DEFAULT_F,type=str)
-parser.add_argument('-o','--out',help='Ouput file',default=OUTPUT_F,type=str)
-parser.add_argument('-v','--verbose',default=-1,help='verbose mode',type=int)
-args = parser.parse_args()
+
+if __name__ == '__main__':
+
+    DEFAULT_F = ""
+    OUTPUT_F = ""
+
+    parser = argparse.ArgumentParser(description='Compute hashcode pizza regina')
+    parser.add_argument('-i', '--filein', help='Input file',default=DEFAULT_F, type=str)
+    parser.add_argument('-o', '--fileout', help='Ouput file',default=OUTPUT_F, type=str)
+    parser.add_argument('-v', '--verbose', default=-1,help='verbose mode', type=int)
+    args = parser.parse_args()
+
+   
 
 
 ```
