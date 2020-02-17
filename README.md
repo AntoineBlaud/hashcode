@@ -171,6 +171,7 @@ mettre @jit(nopython=True,parallel=True) devant fonction
 #### Conseils
 ```
 Utiliser pypy !!!
+Ne pas depasser 10**12 itérations
 
 ```
 
