@@ -423,6 +423,7 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 import datetime
+import tqdm
 ######################################################################################
 import line_profiler
 import atexit

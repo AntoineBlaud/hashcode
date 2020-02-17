@@ -8,10 +8,11 @@ import pulp
 from functools import reduce
 import pickle
 import multiprocessing
-import numpy as np
 import random
-import matplotlib.pyplot as plt
 import datetime
+import tqdm
+import warnings
+warnings.filterwarnings("ignore")
 ######################################################################################
 # import line_profiler
 # import atexit
@@ -40,9 +41,9 @@ def sort_server_per_request_number(endpointsLatencyCache, endpointsVideosRequest
         endpoint = endpointsLatencyCache[i]
         for k in endpoint.keys():
             cacheRequests[k] += endpointsRequestN[i]
-    print("ok")
+
     # {cache 3: 4000, cache 1: 3500, ....}
-    cacheRequests = dict(sorted(cacheRequests.items(), key=lambda t: t[1], reverse=True))
+    cacheRequests = sorted(cacheRequests.items(),key=lambda t: t[1], reverse=True)
     return cacheRequests
 
 
@@ -50,27 +51,69 @@ def endpoint_connected_to_cache(endpointsLatencyCache, cache, endpoint):
     return cache in endpointsLatencyCache[endpoint]
 
 
-def evaluateVideosPoints(endpointsLatencyCache, endpointsVideosRequest, endpointsLatencyDataCenter,endpointVideoLatency, videosN,cache):
+def evaluateVideosPoints(endpointsLatencyCache, endpointsVideosRequest, endpointsLatencyDataCenter, endpointsVideoLatency, videosN, cache):
     videosPoints = {i: 0 for i in range(videosN)}
+    tempEndpointsVideoLatency = {i:{} for i in range(endpointsN)}
     for video in range(videosN):
         for endpoint in range(len(endpointsVideosRequest)):
             videosRequest = endpointsVideosRequest[endpoint]
             if(video in videosRequest):
                 if(endpoint_connected_to_cache(endpointsLatencyCache, cache, endpoint)):
-                    latency = endpointsLatencyDataCenter[endpoint]-endpointsLatencyCache[endpoint][cache]
-                    if()
-                    videosPoints[video]+= (latency)*videosRequest[video]
-    return videosPoints
+                    points = endpointsLatencyDataCenter[endpoint] - endpointsLatencyCache[endpoint][cache]
+                    if(endpoint in endpointsVideoLatency and video in endpointsVideoLatency[endpoint]):
+                        if(points > endpointsVideoLatency[endpoint][video]):
+                            videosPoints[video] += (points) * videosRequest[video]
+                            tempEndpointsVideoLatency[endpoint][video] = points
+                    else:
+                        videosPoints[video] += (points)*videosRequest[video]
+                        tempEndpointsVideoLatency[endpoint][video] = points
+
+    return videosPoints, tempEndpointsVideoLatency
 
 
-def solve(endpointsLatencyCache, endpointsVideosRequest, endpointsLatencyDataCenter, videosN,endpointN,cacheN):
+def knapstack(value,size,cacheSize):
+    prob = pulp.LpProblem("Server", pulp.LpMaximize)
+    videos = pulp.LpVariable.dicts("videos", [i for i in range(len(value))], lowBound=0, upBound=1, cat=pulp.LpInteger)
+    prob += pulp.lpSum(videos[i]*value[i] for i in range(len(value)))
+    prob += pulp.lpSum(videos[i]*value[i] for i in range(len(value)))
+    prob += pulp.lpSum(videos[i]*size[i] for i in range(len(value))) <= cacheSize
+    prob.solve()
+    results = []
+    for k, v in videos.items():
+        if(pulp.value(v) == 1):
+            results.append(k)
+    return results
+        
+
+
+
+
+
+def solve(videosSize,endpointsLatencyCache, endpointsVideosRequest, endpointsLatencyDataCenter,  cachesSortedByRequestsNumber,videosN, endpointsN, cacheN,cacheSize):
+    endpointsVideoLatency = {i:{} for i in range(endpointsN)}
+    caches = {i:[] for i in range(cacheN)}
+    for (cache,r) in tqdm.tqdm(cachesSortedByRequestsNumber):
+        videoPoints,tempEndpointsVideoLatency = evaluateVideosPoints(endpointsLatencyCache,endpointsVideosRequest,endpointsLatencyDataCenter,endpointsVideoLatency,videosN,cache)
+        videosToPutIn = knapstack(videoPoints,videosSize,cacheSize)
+        if(len(videosToPutIn)>0):
+            caches[cache] = videosToPutIn
+
+            for endpoint,dictio in tempEndpointsVideoLatency.items():
+                for video,points in dictio.items():
+                    if(video in caches[cache]):
+                        endpointsVideoLatency[endpoint][video] = points
+        else:
+            del caches[cache] 
+    return caches
+
+        
 
 
 
 if __name__ == '__main__':
 
-    DEFAULT_F = "C:\\Users\\antoi\\Documents\\GitHub\\hashcode\\2017-qualif\\qualification_round_2017.in\\exemple.in"
-    OUTPUT_F = "C:\\Users\\antoi\\Documents\\GitHub\\hashcode\\2017-qualif\\out\\exemple.out"
+    DEFAULT_F = "C:\\Users\\antoi\\Documents\\GitHub\\hashcode\\2017-qualif\\qualification_round_2017.in\\videos_worth_spreading.in"
+    OUTPUT_F = "C:\\Users\\antoi\\Documents\\GitHub\\hashcode\\2017-qualif\\out\\videos_worth_spreading.out"
 
     parser = argparse.ArgumentParser(
         description='Compute hashcode pizza regina')
@@ -118,10 +161,16 @@ if __name__ == '__main__':
         #                       endpoint 1:  {video 1: request 2000} ]
         # videosSize [50,10,30,80,100]
 
-    print("Finished getting input")
 
-    cacheSortedByRequests = sort_server_per_request_number(
-        endpointsLatencyCache, endpointsVideosRequest, cacheN)
+    cachesSortedByRequestsNumber = sort_server_per_request_number(endpointsLatencyCache, endpointsVideosRequest, cacheN)
+    solution = solve(videosSize, endpointsLatencyCache, endpointsVideosRequest, endpointsLatencyDataCenter,  cachesSortedByRequestsNumber,videosN, endpointsN, cacheN,cacheSize)
 
-    evaluateVideosPoints(endpointsLatencyCache,endpointsVideosRequest,endpointsLatencyDataCenter,videosN,0)
-    print("OK")
+    cachesOutN = len(solution)
+    f = open(args.fileout,"w")
+    f.write(str(cachesOutN)+"\n")
+    for k,videos in solution.items():
+        f.write(str(k) + " ")
+        f.write(' '.join(str(videos[i]) for i in range(len(videos))))
+        f.write("\n")
+    
+    
