@@ -171,9 +171,7 @@ mettre @jit(nopython=True,parallel=True) devant fonction
 #### Conseils
 ```
 Utiliser pypy !!!
-10**10 environ 8 minutes
-10**11 environ 1 heure
-
+10**10 itérations environ 10 minutes avec pypy et 40 avec python3
 
 ```
 
