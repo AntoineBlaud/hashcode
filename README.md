@@ -410,25 +410,15 @@ import os
 import time
 import argparse
 import re
-from copy import copy
+from copy import copy, deepcopy
 import pulp
 from functools import reduce
 import pickle
 import multiprocessing
-import numpy as np
 import random
-import matplotlib.pyplot as plt
 import datetime
 import tqdm
-######################################################################################
-import line_profiler
-import atexit
-profile = line_profiler.LineProfiler()
-atexit.register(profile.print_stats)
-######################################################################################
-
-
-
+# import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
 
@@ -440,6 +430,12 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--fileout', help='Ouput file',default=OUTPUT_F, type=str)
     parser.add_argument('-v', '--verbose', default=-1,help='verbose mode', type=int)
     args = parser.parse_args()
+
+
+    # map(int, [int(x) for x in re.sub("\n", "", f.readline()).split(" ")])
+    # [int(x) for x in re.sub("\n", "", f.readline()).split(" ")]
+    # [str(x) for x in re.sub("\n", "", f.readline()).split(" ")]
+    with open(args.filein) as f:
 
    
 

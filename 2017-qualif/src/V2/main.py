@@ -126,17 +126,14 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     with open(args.filein) as f:
-        videosN, endpointsN, requestsN, cacheN, cacheSize = map(
-            int, [int(x) for x in re.sub("\n", "", f.readline()).split(" ")])
-        videosSize = [int(x)
-                      for x in re.sub("\n", "", f.readline()).split(" ")]
+        videosN, endpointsN, requestsN, cacheN, cacheSize = map(int, [int(x) for x in re.sub("\n", "", f.readline()).split(" ")])
+        videosSize = [int(x)for x in re.sub("\n", "", f.readline()).split(" ")]
         # Here endpoint treatement
         # All endpoints
         endpointsLatencyCache = []
         endpointsLatencyDataCenter = {}
         for i in range(endpointsN):
-            datacenterLatency, cacheConnectedN = map(
-                int, [int(x) for x in re.sub("\n", "", f.readline()).split(" ")])
+            datacenterLatency, cacheConnectedN = map(int, [int(x) for x in re.sub("\n", "", f.readline()).split(" ")])
             endpointsLatencyDataCenter[i] = datacenterLatency
             # One endpoints
             endpointLatencyCache = {}
