@@ -95,12 +95,21 @@ if __name__ == '__main__':
             libIndex = lib[0]
             signupTime = lib[2]
             time = deadline-timeNow-1-signupTime
-            score, free_day, books = compute_librairie_book_score(
-                booksValue, lib, time)
+            score, free_day, books = compute_librairie_book_score(booksValue, lib, time)
             librairies_scores.append((libIndex, score, free_day, books))
-
-        libSortedScore = sorted(
-            librairies_scores, key=lambda c: c[1], reverse=True)
+        
+        libSortedScore = sorted(librairies_scores, key=lambda c: c[1], reverse=True)
+        free_dayMin = 1000000
+        index = 0
+        best  = libSortedScore[0]
+        if((len(librairies))>10):
+            coeff = int(len(librairies)/10)
+        else:
+            coeff = len(librairies)
+        for l in libSortedScore[0:coeff]:
+            if(l[1]<free_dayMin):
+                best = l
+                free_dayMin = l[1]
         return libSortedScore[0][0], libSortedScore[0][3]
 
 
