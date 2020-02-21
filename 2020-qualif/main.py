@@ -36,7 +36,7 @@ import tqdm
 if __name__ == '__main__':
 
     
-    FILE = "e_so_many_books"
+    FILE = "b_read_on"
     DEFAULT_F = "C:\\Users\\antoi\\Documents\\GitHub\\hashcode\\2020-qualif\\in\\" + FILE + ".txt"
     OUTPUT_F = "C:\\Users\\antoi\\Documents\\GitHub\\hashcode\\2020-qualif\\out\\" + FILE + ".txt"
     parser = argparse.ArgumentParser(description='Hashcode 2020 qualif')
@@ -62,7 +62,7 @@ if __name__ == '__main__':
         booksValue = [int(x)
                       for x in re.sub("\n", "", f.readline()).split(" ")]
         booksValue = [(i, booksValue[i]) for i in range(len(booksValue))]
-        bookAlreadyAdd = {i: 0 for i in range(booksN)}
+        
 
         librairies = []
         for i in range(librarieN):
@@ -111,27 +111,34 @@ if __name__ == '__main__':
             librairies_scores.append((libIndex, score, free_day, books, signupTime));
 
         #libSortedScore = sorted(librairies_scores, key=lambda c: c[4])
-        libSortedScore = sorted(librairies_scores, key=lambda c: c[4])
-        maxI = min(50,len(libSortedScore))
-        libSortedScore = sorted(libSortedScore[0:maxI],key=lambda c: c[1],reverse=True)
-        maxI2 = min(20,len(libSortedScore))
-        libSortedScore = sorted(libSortedScore[0:maxI2],key=lambda c: c[2],reverse=True)
-
-        r = random.randint(0,maxI-1)
+        #libSortedScore = sorted(librairies_scores, key=lambda c: c[4]==1)
+        r1 = random.randint(1,20)
+        #r2 = random.randint(1,5)
+        libSortedScore = sorted(librairies_scores, key=lambda c: c[1],reverse=True)
+        maxI = min(r1,len(libSortedScore))
+        libSortedScore = sorted(libSortedScore[0:maxI],key=lambda c: c[1])
+        maxI2 =  random.randint(0,len(libSortedScore)-1)
+        #maxI2 = min(r2,len(libSortedScore))
+        #libSortedScore = sorted(libSortedScore[0:maxI2],key=lambda c: c[4])
+        # maxI2 = min(10,len(libSortedScore))
+        # r = random.randint(0,maxI2-1)
         # sort by other params
-        return libSortedScore[0][0], libSortedScore[0][3]
+        return libSortedScore[maxI2][0], libSortedScore[maxI2][3]
 
-    def solve(booksN, librarieN, deadline, booksValue, bookAlreadyAdd, moySignupProcess, librairies):
+    def solve(booksN, librarieN, deadline, booksValue,moySignupProcess, librairies):
         print("Starting solving....")
         best_score = 0
         best_conf = []
+        REP = 200
         saved_libraires = deepcopy(librairies)
-        pbar = tqdm.tqdm(total=1)
-        for test in range(1):
+        pbar = tqdm.tqdm(total=REP)
+        for test in range(REP):
             lib_score = 0
             timeNow = 0
             final = []
-            while(timeNow < deadline-1 and len(librairies) > 0 and timeNow < deadline):
+            bookAlreadyAdd = {i: 0 for i in range(booksN)}
+            librairies = deepcopy(saved_libraires)
+            while(timeNow < deadline-1 and len(librairies) > 0):
                 next_lib, books = get_Best_librairies(librairies, booksValue, deadline, timeNow, moySignupProcess, bookAlreadyAdd)
                 # supprime la librairie ajouté
                 for i, l in enumerate(librairies):
@@ -143,7 +150,7 @@ if __name__ == '__main__':
                 timeNow += next_lib[2]
                 if(len(books) > 0):
                     final.append((next_lib[0], books))
-                    pbar.set_postfix(file=FILE, score=lib_score,lib=len(librairies))
+                    pbar.set_postfix(file=FILE, score=best_score,lib=len(librairies))
                 # mettre a jour les autres livres
                 for book in books:
                     bookAlreadyAdd[book] = 1
@@ -152,7 +159,6 @@ if __name__ == '__main__':
                 best_score = lib_score
                 best_conf = deepcopy(final)
             pbar.update(1)
-            librairies = deepcopy(saved_libraires)
             
         return best_conf,best_score
 
@@ -169,8 +175,7 @@ if __name__ == '__main__':
     moySignupProcess = moySignupProcess/len(librairies)
     print(" Average signup process : %f" % (moySignupProcess))
 
-    best_conf,best_score = solve(booksN, librarieN, deadline, booksValue,
-                      bookAlreadyAdd, moySignupProcess, librairies)
+    best_conf,best_score = solve(booksN, librarieN, deadline, booksValue, moySignupProcess, librairies)
 
     print("\n")
     print("Best score: %d"%best_score)
