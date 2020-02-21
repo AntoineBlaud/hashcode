@@ -14,7 +14,6 @@ import tqdm
 # import matplotlib.pyplot as plt
 
 
-
 #########################################################
 # Lire 3 fois le problème
 # Communiquer afin de bien être d'accord sur ce qu'il faut faire (le sujet du problème)
@@ -35,9 +34,9 @@ import tqdm
 #########################################################
 if __name__ == '__main__':
 
-    FILE = "b_read_on"
-    DEFAULT_F = "C:\\Users\\antoi\\Documents\\GitHub\\hashcode\\2020-qualif\\in\\" + FILE + ".txt"
-    OUTPUT_F = "C:\\Users\\antoi\\Documents\\GitHub\\hashcode\\2020-qualif\\out\\" + FILE + ".txt"
+    file = "d_tough_choices"
+    DEFAULT_F = "C:\\Users\\antoi\\Documents\\GitHub\\hashcode\\2020-qualif\\in\\d_tough_choices.txt"
+    OUTPUT_F = "C:\\Users\\antoi\\Documents\\GitHub\\hashcode\\2020-qualif\\out\\d_tough_choices.txt"
 
     parser = argparse.ArgumentParser(description='Hashcode 2020 qualif')
     parser.add_argument('-i', '--filein', help='Input file',
@@ -53,14 +52,12 @@ if __name__ == '__main__':
     # [str(x) for x in re.sub("\n", "", f.readline()).split(" ")]
 
     # Input process
-    print("Getting input...")
     with open(args.filein) as f:
         booksN, librarieN, deadline = map(
             int, [int(x) for x in re.sub("\n", "", f.readline()).split(" ")])
         booksValue = [int(x)
                       for x in re.sub("\n", "", f.readline()).split(" ")]
         booksValue = [(i, booksValue[i]) for i in range(len(booksValue))]
-        bookAlreadyAdd = {i: 0 for i in range(booksN)}
 
         librairies = []
         for i in range(librarieN):
@@ -75,116 +72,95 @@ if __name__ == '__main__':
 
     def priority_sort(to_sort, order):
         priority = {e: p for p, e in enumerate(order)}
-        return list(sorted(to_sort, key=lambda e: priority[e]))
+        r = list(sorted(to_sort, key=lambda e: priority[e]))
+        return r
 
     # A refaire
-    def compute_librairie_book_score(booksValue, lib, time, bookAlreadyAdd):
+    def compute_librairie_book_score(booksValue, lib, time):
         score = 0
         i = 0
         t = 0
-        n = 0
         booksPerDay = lib[3]
         books = []
         while(i < len(lib[4]) and t < time):
-            while(i < min(i+booksPerDay+n, len(lib[4]))):
-                book = lib[4][i]
-                if(bookAlreadyAdd[book] == 0):
-                    score += booksValue[book][1]
-                    books.append(book)
-                else:
-                    n += 1
-                i += 1
+            for i in range(i, min(i+booksPerDay, len(lib[4]))):
+                score += booksValue[lib[4][i]][1]
+                books.append(lib[4][i])
             t += 1
             i += 1
         return score, time-t, books
 
-    def get_Best_librairies(librairies, booksValue, deadline, timeNow, moySignupProcess, bookAlreadyAdd):
-        # sort by score
+    def get_Best_librairies(librairies, booksValue, deadline, timeNow,moySignupProcess):
         librairies_scores = []
         for lib in librairies:
             libIndex = lib[0]
             signupTime = lib[2]
             time = deadline-timeNow-1-signupTime
-            score, free_day, books = compute_librairie_book_score(
-                booksValue, lib, time, bookAlreadyAdd)
-            librairies_scores.append(
-                (libIndex, score, free_day, books, signupTime))
-
-        libSortedScore = sorted(
-            librairies_scores, key=lambda c: c[1], reverse=True)
-
-        # sort by other params
+            score, free_day, books = compute_librairie_book_score(booksValue, lib, time)
+            librairies_scores.append((libIndex, score, free_day, books, signupTime))
+        
+        libSortedScore = sorted(librairies_scores, key=lambda c: c[1], reverse=True)
         sol = 1000000
         index = 0
-        best = libSortedScore[0]
-        if((len(librairies)) > 10):
-            coeff = int(len(librairies)/3.5)
+        best  = libSortedScore[0]
+        if((len(librairies))>10):
+            coeff = int(len(librairies)/10)
         else:
             coeff = len(librairies)
         for l in libSortedScore[0:coeff]:
-            if(l[4] < sol*random.random()*1.2):
-                sol = l[4]
+            if(l[2]<sol):
+                sol= l[4]
                 best = l
         return best[0], best[3]
 
-    def solve(booksN, librarieN, deadline, booksValue, bookAlreadyAdd, moySignupProcess, librairies):
-        print("Starting solving....")
-        best_score = 0
-        best_conf = []
-        saved_libraires = deepcopy(librairies)
-        pbar = tqdm.tqdm(total=1)
-        for test in range(1):
-            lib_score = 0
-            timeNow = 0
-            final = []
-            while(timeNow < deadline-1 and len(librairies) > 0 and timeNow < deadline):
-                next_lib, books = get_Best_librairies(librairies, booksValue, deadline, timeNow, moySignupProcess, bookAlreadyAdd)
-                # supprime la librairie ajouté
-                for i, l in enumerate(librairies):
-                    if l[0] == next_lib:
-                        next_lib = deepcopy(l)
-                        break
-                del librairies[i]
 
-                timeNow += next_lib[2]
-                if(len(books) > 0):
-                    final.append((next_lib[0], books))
-                    pbar.set_postfix(file=FILE, score=lib_score,lib=len(librairies))
-                # mettre a jour les autres livres
-                for book in books:
-                    bookAlreadyAdd[book] = 1
-                    lib_score += booksValue[book][1]
-            if(lib_score > best_score):
-                best_score = lib_score
-                best_conf = deepcopy(final)
-            pbar.update(1)
-            librairies = deepcopy(saved_libraires)
-            
-        return best_conf
+        # for score,free in zip(librairies_scores,librairies_free_day):
+        #     if()
 
-    print("Sorting books in librairies....")
-    # sort books per value and compute moySignupProcess
     librairieBookScore = []
+    timeNow = 0
     moySignupProcess = 0
-    pbar = tqdm.tqdm(total=len(librairies))
     # livre dans les bibliothèques triées par valeur
     for i, lib in enumerate(librairies):
         lib[4] = priority_sort(lib[4], booksIDSortedPerValue)
-        moySignupProcess += lib[2]
+        moySignupProcess+=lib[2]
+    print("ok")
+    moySignupProcess=moySignupProcess/len(librairies)
+
+    print("moyenne signup process : %d"%(moySignupProcess))
+
+    librairies_ordered_by_start = []
+    timeNow = 0
+    final = []
+    pbar = tqdm.tqdm(total = len(librairies))
+    while(timeNow < deadline-1 and len(librairies) > 0 and timeNow < deadline):
+        next_lib, books = get_Best_librairies(librairies, booksValue, deadline, timeNow,moySignupProcess)
+        librairies_ordered_by_start.append(next_lib)
+        for i, l in enumerate(librairies):
+            if l[0] == next_lib:
+                next_lib = deepcopy(l)
+                break
+        del librairies[i]
+        timeNow += next_lib[2]
+        if(len(books)>0):
+            final.append((next_lib[0], books))
         pbar.update(1)
-    moySignupProcess = moySignupProcess/len(librairies)
-    print(" Average signup process : %f" % (moySignupProcess))
+        pbar.set_postfix(file=file,timeNow=timeNow)
+        # mettre a jour les autres
+        for x, l in enumerate(librairies):
+            for i, book in enumerate(l[4]):
+                if(book in books):
+                    del librairies[x][4][i]
 
-    best_conf = solve(booksN, librarieN, deadline, booksValue,
-                      bookAlreadyAdd, moySignupProcess, librairies)
 
-    print("\n")
-    print(" Writting output")
+    timeNow = 0
+
     # output process
     with open(args.fileout, "w") as f:
-        f.write(str(len(best_conf))+"\n")
-        for l in best_conf:
+        f.write(str(len(final))+"\n")
+        for l in final:
             f.write(str(l[0])+" "+str(len(l[1]))+"\n")
             for b in l[1]:
                 f.write(str(b)+" ")
             f.write("\n")
+
