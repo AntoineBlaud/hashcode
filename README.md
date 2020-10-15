@@ -437,8 +437,14 @@ if __name__ == '__main__':
     # [int(x) for x in re.sub("\n", "", f.readline()).split(" ")]
     # [str(x) for x in re.sub("\n", "", f.readline()).split(" ")]
     with open(args.filein) as f:
-
+ (voir tout ce qui est en rapport 
    
 
 
 ```
+
+
+### 2021
+
+https://fr.wikipedia.org/wiki/Th%C3%A9orie_des_graphes (voir tout ce qui est en rapport avec les graphes)
+IA pouvant améliorer les solutions juste en ajustant des parametre 
