@@ -4,10 +4,9 @@
 
 # ========================
 
-import random # utile pour melanger le jeu (liste de cartes)
+import random  # helpere pour melanger le jeu (liste de cartes)
 import affichage
 import time
-
 
 
 # ========================
@@ -17,86 +16,94 @@ import time
 # ========================
 
 
-
 # Fonction permettant de creer les cartes (pour chaque poids, on cree autant de males que de femelles)
 
 # Chaque carte est une liste de 2 elements [poids, sexe] ou le poids va de 0 à 10 et le sexe vaut "m" ou "f"
 
-def creerCartes(): 
+def creerCartes():
 
-    cartes = [] # liste des cartes (vide)
+    cartes = []  # liste des cartes (vide)
 
-    nbExemplaires = [3,2,3,3,3,3,2,2,1,1,1,1] # nombre de cartes identiques pour chaque poids (par sexe) -> ici 3 cartes de oids 0, 2 cartes de poids 1 etc.
+    # nombre de cartes identiques pour chaque poids (par sexe) -> ici 3 cartes de oids 0, 2 cartes de poids 1 etc.
+    nbExemplaires = [3, 2, 3, 3, 3, 3, 2, 2, 1, 1, 1, 1]
 
     sexes = ["m", "f"]
 
-    for s in sexes: # pour chaque sexe
+    for s in sexes:  # pour chaque sexe
 
         poids = 0
 
-        while poids < len(nbExemplaires): # et pour chaque poids (= indice dans la liste nbExemplaires)
+        # et pour chaque poids (= indice dans la liste nbExemplaires)
+        while poids < len(nbExemplaires):
 
-            cartes += nbExemplaires[poids] * [[poids,s]] # on cree le bon nombre d'exemplaires pour un poids et un sexe donne
+            # on cree le bon nombre d'exemplaires pour un poids et un sexe donne
+            cartes += nbExemplaires[poids] * [[poids, s]]
 
-            poids += 1 # on passe au poids suivant
+            poids += 1  # on passe au poids suivant
 
-    return(cartes) # renvoie une liste de cartes (soit une liste de listes)
-
+    return(cartes)  # renvoie une liste de cartes (soit une liste de listes)
 
 
 # Fonction permettant de piocher des cartes
 
-def piocher(nbCartes): # Prend en entree le nombre de cartes a piocher
+def piocher(nbCartes):  # Prend en entree le nombre de cartes a piocher
 
-    global pioche # le fait de piocher va modifier la pioche (variable globale)
+    # le fait de piocher va modifier la pioche (variable globale)
+    global pioche
 
-    cartesPiochees = pioche[:nbCartes] # on pioche les cartes
+    cartesPiochees = pioche[:nbCartes]  # on pioche les cartes
 
-    pioche = pioche[nbCartes:] # on les enleve donc de la pioche
+    pioche = pioche[nbCartes:]  # on les enleve donc de la pioche
 
-    return(cartesPiochees) # renvoie une liste de cartes (soit une liste de listes)
-
+    # renvoie une liste de cartes (soit une liste de listes)
+    return(cartesPiochees)
 
 
 # Procedure permettant de poser une carte de sa main sur l'une des embarcations du jeu
 
-def jouer(joueur, numCarte, embarc): # On choisit celui qui joue ("moi" ou "ordi"), le numero de la carte a jouer (la premiere carte etant numero 0) ainsi que l'embarcation ("A","B"...)
+def jouer(joueur, numCarte, embarc):  # On choisit celui qui joue ("moi" ou "ordi"), le numero de la carte a jouer (la premiere carte etant numero 0) ainsi que l'embarcation ("A","B"...)
 
-    global mains, jeu # le fait de jouer va modifier le jeu ainsi que ma main ou celle de l'ordi
+    global mains, jeu  # le fait de jouer va modifier le jeu ainsi que ma main ou celle de l'ordi
 
-    carteAjouer = mains[joueur][numCarte] # la carte a jouer est la nieme de la main du joueur (mains etant un dictionnaire)
+    # la carte a jouer est la nieme de la main du joueur (mains etant un dictionnaire)
+    carteAjouer = mains[joueur][numCarte]
 
-    jeu[embarc] += [carteAjouer] # on ajoute la carte jouee sur l'embarcation choisie du jeu
+    # on ajoute la carte jouee sur l'embarcation choisie du jeu
+    jeu[embarc] += [carteAjouer]
 
-    mains[joueur].remove(carteAjouer) # on supprime donc la carte jouee de la main du joueur
-
+    # on supprime donc la carte jouee de la main du joueur
+    mains[joueur].remove(carteAjouer)
 
 
 # Fonction qui evalue la possibilite de jouer une carte sur une embarcation
 
 # Une embarcation doit contenir soit uniquement des cartes de meme sexe, soit une alternance des sexes
 
-def coupPossible(carte, cartesEmbarc): # en fonction de la carte a jouer et de la liste des cartes presentes sur l'embarcation
+# en fonction de la carte a jouer et de la liste des cartes presentes sur l'embarcation
+def coupPossible(carte, cartesEmbarc):
 
-    if len(cartesEmbarc) <= 1 : # si pas encore de carte sur l'embarcation ou une seule
+    if len(cartesEmbarc) <= 1:  # si pas encore de carte sur l'embarcation ou une seule
 
         print("Coup autorisé")
 
-        return(True) # on peut jouer ce qu'on veut
+        return(True)  # on peut jouer ce qu'on veut
 
-    else: # s'il y a au moins 2 cartes sur l'embarcation
+    else:  # s'il y a au moins 2 cartes sur l'embarcation
 
-        sexe = carte[1] # sexe de la carte a jouer
+        sexe = carte[1]  # sexe de la carte a jouer
 
-        sexeDerniereCarte = cartesEmbarc[-1][1] # sexe de la derniere carte posee sur l'embarcation
+        # sexe de la derniere carte posee sur l'embarcation
+        sexeDerniereCarte = cartesEmbarc[-1][1]
 
-        sexeAvantDerniereCarte = cartesEmbarc[-2][1] # sexe de l'avant derniere carte posee sur l'embarcation
+        # sexe de l'avant derniere carte posee sur l'embarcation
+        sexeAvantDerniereCarte = cartesEmbarc[-2][1]
 
-        alternance = (sexeDerniereCarte != sexeAvantDerniereCarte) # il faut une alternance des sexes si les 2 dernieres cartes de l'embarcation sont de sexe different, sinon il faut toujours le meme sexe
+        # il faut une alternance des sexes si les 2 dernieres cartes de l'embarcation sont de sexe different, sinon il faut toujours le meme sexe
+        alternance = (sexeDerniereCarte != sexeAvantDerniereCarte)
 
-        if alternance: # s'il y a alternance des sexes sur l'embarcation
+        if alternance:  # s'il y a alternance des sexes sur l'embarcation
 
-            if sexe != sexeDerniereCarte: # il faut que le sexe de la carte a jouer soit different de celui de la derniere carte
+            if sexe != sexeDerniereCarte:  # il faut que le sexe de la carte a jouer soit different de celui de la derniere carte
 
                 affichage.write_log("Coup autorisé")
 
@@ -106,7 +113,7 @@ def coupPossible(carte, cartesEmbarc): # en fonction de la carte a jouer et de l
 
             return(sexe != sexeDerniereCarte)
 
-        else: # s'il n'y a pas d'alternance, il faut que le sexe de la carte a jouer soit le meme que celui de la derniere carte
+        else:  # s'il n'y a pas d'alternance, il faut que le sexe de la carte a jouer soit le meme que celui de la derniere carte
 
             if sexe == sexeDerniereCarte:
 
@@ -116,8 +123,8 @@ def coupPossible(carte, cartesEmbarc): # en fonction de la carte a jouer et de l
 
                 affichage.write_log("Coup interdit")
 
-            return(sexe == sexeDerniereCarte) # renvoie un booleen qui informe de la faisabilite du coup que souhaite faire le joueur
-
+            # renvoie un booleen qui informe de la faisabilite du coup que souhaite faire le joueur
+            return(sexe == sexeDerniereCarte)
 
 
 # Fonction qui choisit la carte que va jouer l'ordinateur en fonction de l'etat du jeu
@@ -130,21 +137,22 @@ def choixCarteOrdi():
 
     i = 0
 
-    while i < len(main): # parcourt les numeros de carte dans la main
+    while i < len(main):  # parcourt les numeros de carte dans la main
 
-        for embarc in jeu: # parcourt les embarcations du jeu
+        for embarc in jeu:  # parcourt les embarcations du jeu
 
-            if coupPossible(main[i], jeu[embarc]): # evalue si la carte i est compatible avec la liste de cartes de l'embarcation consideree
+            # evalue si la carte i est compatible avec la liste de cartes de l'embarcation consideree
+            if coupPossible(main[i], jeu[embarc]):
 
-                return(i, embarc) # renvoie le numero de la carte a jouer et embarcation sur laquelle jouer
+                # renvoie le numero de la carte a jouer et embarcation sur laquelle jouer
+                return(i, embarc)
 
         i += 1
 
-    return(0,0) # si l'ordi ne peut pas jouer, renvoie le doublet (0,0)
+    return(0, 0)  # si l'ordi ne peut pas jouer, renvoie le doublet (0,0)
 
-    
 
-# Procedure qui donne le verdict lorsque la carte est jouee sur l'embarcation 
+# Procedure qui donne le verdict lorsque la carte est jouee sur l'embarcation
 
 # Le joueur gagne si ça carte atteint exactement le poids de l'embarcation -> il gagne autant de points que le poids total de l'embarcation et l'embarcation est defaussee
 
@@ -152,38 +160,35 @@ def choixCarteOrdi():
 
 # Sinon, le jeu continue normalement
 
-def verdict(joueur, carte, cartesEmbarc): # en fonction de la carte a jouer et de la liste des cartes presentes sur l'embarcation
+# en fonction de la carte a jouer et de la liste des cartes presentes sur l'embarcation
+def verdict(joueur, carte, cartesEmbarc):
 
-    global scores, jeu # le fait de gagner ou perdre va modifier le jeu ainsi que mon score ou celui de l'ordi
+    # le fait de gagner ou perdre va modifier le jeu ainsi que mon score ou celui de l'ordi
+    global scores, jeu
 
     main = mains[joueur]
 
-    poidsEmbarc = 0 # calcul du poids total de l'embarcation
+    poidsEmbarc = 0  # calcul du poids total de l'embarcation
 
-    for c in cartesEmbarc: # pour chaque carte de l'embarcation
+    for c in cartesEmbarc:  # pour chaque carte de l'embarcation
 
-        poidsEmbarc += c[0] # on ajoute le poids de la carte au poids total
+        poidsEmbarc += c[0]  # on ajoute le poids de la carte au poids total
 
-    if poidsEmbarc == poidsMax: # si l'embarcation atteint exactement son poids max
+    if poidsEmbarc == poidsMax:  # si l'embarcation atteint exactement son poids max
 
-        scores[joueur] += poidsEmbarc # le joueur gagne des points
+        scores[joueur] += poidsEmbarc  # le joueur gagne des points
 
-        jeu[embarc] = [] # les cartes de l'embarcation sont defaussees
+        jeu[embarc] = []  # les cartes de l'embarcation sont defaussees
 
         affichage.write_log("Coup gagnant")
 
-    if poidsEmbarc > poidsMax: # si l'embarcation depasse le poids max
+    if poidsEmbarc > poidsMax:  # si l'embarcation depasse le poids max
 
-        scores[joueur] -= poidsEmbarc # le joueur perd des points
+        scores[joueur] -= poidsEmbarc  # le joueur perd des points
 
-        jeu[embarc] = [] # les cartes de l'embarcation sont defaussees
+        jeu[embarc] = []  # les cartes de l'embarcation sont defaussees
 
         affichage.write_log("Coup perdant")
-
-
-
-        
-
 
 
 # ========================
@@ -193,31 +198,23 @@ def verdict(joueur, carte, cartesEmbarc): # en fonction de la carte a jouer et d
 # ========================
 
 
-
-
-
 # Constantes et variables globales
 
 # ------------------------
 
 
-
-poidsMax = 15 # poids maximal autorise sur chaque embarcation
-
+poidsMax = 15  # poids maximal autorise sur chaque embarcation
 
 
-jeu = {"A":[],"B":[],"C":[],"D":[],"E":[]} # chaque lettre correspond a une embarcation sur laquelle se trouve une liste de cartes
+# chaque lettre correspond a une embarcation sur laquelle se trouve une liste de cartes
+jeu = {"A": [], "B": [], "C": [], "D": [], "E": []}
 
 
+scores = {"ordi": 0, "moi": 0}  # score de chaque joueur
 
-scores = {"ordi":0,"moi":0} # score de chaque joueur
+mains = {"ordi": [], "moi": []}  # au départ, la main de chaque joueur est vide
 
-mains = {"ordi":[],"moi":[]} # au départ, la main de chaque joueur est vide
-
-joueur = "ordi" # nom du premier joueur
-
-
-
+joueur = "ordi"  # nom du premier joueur
 
 
 # Appel des fonctions
@@ -225,21 +222,21 @@ joueur = "ordi" # nom du premier joueur
 # ------------------------
 
 
-
 # Creation du jeu de cartes
 
-pioche = creerCartes() # creation du jeu de cartes complet ordonne (= pioche)
+pioche = creerCartes()  # creation du jeu de cartes complet ordonne (= pioche)
 
-random.shuffle(pioche) # on melange la pioche (la methode shuffle du module random permet de melanger une liste aleatoirement)
-
+# on melange la pioche (la methode shuffle du module random permet de melanger une liste aleatoirement)
+random.shuffle(pioche)
 
 
 # Constitution des mains des joueurs
 
-mains["ordi"] = piocher(8) # l'ordi pioche les 8 premieres cartes de la pioche melangee = liste
+# l'ordi pioche les 8 premieres cartes de la pioche melangee = liste
+mains["ordi"] = piocher(8)
 
-mains["moi"] = piocher(8) # on pioche les 8 premieres cartes de la pioche melangee = liste
-
+# on pioche les 8 premieres cartes de la pioche melangee = liste
+mains["moi"] = piocher(8)
 
 
 # affichage du jeu, des scores et des mains
@@ -247,107 +244,105 @@ affichage.init()
 print("Début du jeu:\n==================")
 
 
-affichage.display_jeu(jeu)
-affichage.write_score(scores["moi"],scores["ordi"])
+affichage.display_game(jeu)
+affichage.write_score(scores["moi"], scores["ordi"])
 
 affichage.display_player_cards(mains["moi"])
 affichage.display_computer_cards(mains["ordi"])
 
 
-
-
-
 # Déroulement des tours de jeu
 
 
+t = 1  # numero de tour
 
-t = 1 # numero de tour
-
-jeuTermine = False # le jeu se termine quand le joueur qui doit jouer n'a plus de carte
-
+jeuTermine = False  # le jeu se termine quand le joueur qui doit jouer n'a plus de carte
 
 
-while not jeuTermine: # on joue tant que le jeu n'est pas termine
+while not jeuTermine:  # on joue tant que le jeu n'est pas termine
 
     affichage.write_log("============================")
     affichage.write_log("Joueur: {}".format(joueur))
 
-    
-
     # Choix de la carte par joueur ou l'ordi
 
-    if joueur == "ordi": # cas de l'ordi
+    if joueur == "ordi":  # cas de l'ordi
 
-        choix = choixCarteOrdi() # choix de la carte a jouer par l'ordi
+        choix = choixCarteOrdi()  # choix de la carte a jouer par l'ordi
 
-        if choix == (0,0): # impossible de jouer pour l'ordi 
+        if choix == (0, 0):  # impossible de jouer pour l'ordi
 
-            mains[joueur] == [] # il defausse toutes ses cartes (sa main devient vide)
-
-        else:
-
-            numCarte = choix[0] # numero de la carte choisie par l'ordi
-
-            carte = mains[joueur][numCarte] # carte choisie par l'ordi
-
-            embarc = choix[1] # embarcation choisie par l'ordi
-
-    else: # cas du joueur (moi)
-
-        numCarte = int(affichage.get_input("Quelle carte voulez-vous jouer? (entrez un nombre entier; tapez 0 si aucun coup n'est possible) ")) # la premiere carte aura le numero 1 (et non 0)
-
-        if numCarte == 0: # impossible de jouer
-
-            mains[joueur] == [] # il defausse toutes ses cartes (sa main devient vide)
+            # il defausse toutes ses cartes (sa main devient vide)
+            mains[joueur] == []
 
         else:
 
-            numCarte -= 1 # on recupere l'indice de la carte choisie (en commencant pas 0)
+            numCarte = choix[0]  # numero de la carte choisie par l'ordi
 
-            carte = mains[joueur][numCarte] # carte choisie par le joueur dans sa main
+            carte = mains[joueur][numCarte]  # carte choisie par l'ordi
 
-            embarc = affichage.get_input("Sur quelle embarcation? (A, B, C, D ou E) ") # choix de l'embarcation sur laquelle jouer
+            embarc = choix[1]  # embarcation choisie par l'ordi
 
-            possible = coupPossible(carte,jeu[embarc]) # on verifie que le coup choisi par le joueur est possible
+    else:  # cas du joueur (moi)
 
-            while not possible: # si le joueur veut jouer sur une embarcation non autorisee -> on lui redemande son choix
+        # la premiere carte aura le numero 1 (et non 0)
+        numCarte = int(affichage.get_input(
+            "Quelle carte voulez-vous jouer? (entrez un nombre entier; tapez 0 si aucun coup n'est possible) "))
 
-                numCarte = int(affichage.get_input(("Quelle carte voulez-vous jouer? (entrez un nombre entier; tapez 0 si aucun coup n'est possible) ")))
+        if numCarte == 0:  # impossible de jouer
 
-                if numCarte == 0: # impossible de jouer
+            # il defausse toutes ses cartes (sa main devient vide)
+            mains[joueur] == []
+
+        else:
+
+            # on recupere l'indice de la carte choisie (en commencant pas 0)
+            numCarte -= 1
+
+            # carte choisie par le joueur dans sa main
+            carte = mains[joueur][numCarte]
+
+            # choix de l'embarcation sur laquelle jouer
+            embarc = affichage.get_input(
+                "Sur quelle embarcation? (A, B, C, D ou E) ")
+
+            # on verifie que le coup choisi par le joueur est possible
+            possible = coupPossible(carte, jeu[embarc])
+
+            while not possible:  # si le joueur veut jouer sur une embarcation non autorisee -> on lui redemande son choix
+
+                numCarte = int(affichage.get_input(
+                    ("Quelle carte voulez-vous jouer? (entrez un nombre entier; tapez 0 si aucun coup n'est possible) ")))
+
+                if numCarte == 0:  # impossible de jouer
 
                     mains[joueur] == []
 
                 else:
 
-                    numCarte -= 1 
+                    numCarte -= 1
 
                     carte = mains[joueur][numCarte]
 
-                    embarc = affichage.get_input("Sur quelle embarcation? (A, B, C, D ou E) ") 
+                    embarc = affichage.get_input(
+                        "Sur quelle embarcation? (A, B, C, D ou E) ")
 
-                    possible = coupPossible(carte,jeu[embarc]) 
-
-
+                    possible = coupPossible(carte, jeu[embarc])
 
     # action de jouer et verdict
 
-    jouer(joueur,numCarte,embarc)
+    jouer(joueur, numCarte, embarc)
 
     verdict(joueur, carte, jeu[embarc])
-
-    
 
     # affichage du jeu, des scores et des mains
 
     print("Jeu: ", jeu)
     affichage.clear()
-    affichage.write_score(scores["moi"],scores["ordi"])
+    affichage.write_score(scores["moi"], scores["ordi"])
     affichage.update_player_cards(mains["moi"])
     affichage.update_computer_cards(mains["ordi"])
-    affichage.display_jeu(jeu)
-
-
+    affichage.display_game(jeu)
 
     # changement de joueur
 
@@ -359,12 +354,10 @@ while not jeuTermine: # on joue tant que le jeu n'est pas termine
 
         joueur = "ordi"
 
-    t += 1 # tour suivant
+    t += 1  # tour suivant
 
-
-
-    jeuTermine = (mains[joueur]==[]) # on verifie si le joueur a encore des cartes a jouer
-
+    # on verifie si le joueur a encore des cartes a jouer
+    jeuTermine = (mains[joueur] == [])
 
 
 # proclamation du gagnant
@@ -380,23 +373,5 @@ else:
 
 time.sleep(15)
 
-    
 
-    
-
-
-
-# on ne verifie pas que ce que tape l'utilisateur est correct (vous pouvez améliorer ceci)
-
-
-
-
-
-
-
-
-
-
-
-
-
+# on ne verifie pas que ce que tape l'helperisateur est correct (vous pouvez améliorer ceci)

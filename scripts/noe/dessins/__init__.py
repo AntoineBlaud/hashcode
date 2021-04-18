@@ -1,4 +1,4 @@
-from dessins.barque import *
+from dessins.ship import *
 from dessins.plage import *
 from dessins.verso import *
 from dessins import *

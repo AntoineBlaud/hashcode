@@ -2,12 +2,6 @@ import turtle as te
 from constants import *
 
 
-
-
-def reset():
-    Xh = 0  
-    Yh = 0
-
 def Bezier(p1, p2, t):  
     return p1 * (1 - t) + p2 * t
 
@@ -89,3 +83,5 @@ def Curveto_r(x1, y1, x2, y2, x, y):
     Y_now = Height / 2 - te.ycor()
     Bezier_3(X_now, Y_now, X_now + x1, Y_now + y1,
              X_now + x2, Y_now + y2, X_now + x, Y_now + y)
+
+
