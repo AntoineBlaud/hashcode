@@ -3,7 +3,7 @@
     "files.associations": {
         "json.h": "c"
     },
-    "python.pythonPath": "C:\\Users\\antoi\\AppData\\Local\\Programs\\Python\\Python35\\python.exe",
+    "python.pythonPath": "c:\\python38\\python.exe",
     "python.testing.pytestArgs": [
         "."
     ],

@@ -122,7 +122,8 @@ def process_router(mapping,router_budget,maxSeconds=None):
             z=0
             for xr in range(-radius,radius+1):
                 for yr in range(-radius,radius+1):
-                    if(i+xr<0 or i+xr>=rowsN or j+yr<0 or j+yr>=columsN): prob+=pulp.lpSum(targetcell_receive[(i,j,z)]) ==0
+                    if(i+xr<0 or i+xr>=rowsN or j+yr<0 or j+yr>=columsN): 
+                        prob+=pulp.lpSum(targetcell_receive[(i,j,z)]) ==0
                         # On vérifier qu'il n'y a pas de murs
                     elif(check_wall(i,j,i+xr,j+yr)==0):
                         #-x+y >=0
@@ -134,6 +135,7 @@ def process_router(mapping,router_budget,maxSeconds=None):
                     z+=1
             # Si dans une seule sur les radius*radius possibilés on capte, alors on capte
             # <=> si la somme des receveurs >=1 then targetcell = 1 else targetcell = 0
+            #https://math.stackexchange.com/questions/2500415/how-to-write-if-else-statement-in-linear-programming/2501007
             prob+=pulp.lpSum([targetcell_receive[(i,j,z)] for z in range((2*radius+1)*(2*radius+1))]) >=1 - M*(1-omega[(i,j)])
             prob+=pulp.lpSum([targetcell_receive[(i,j,z)] for z in range((2*radius+1)*(2*radius+1))]) <=1 + M*(omega[(i,j)])
             prob+=pulp.lpSum(1-M*(1-omega[(i,j)])) <= targetcell[(i,j)]

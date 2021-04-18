@@ -278,6 +278,7 @@ https://coin-or.github.io/pulp/CaseStudies/a_blending_problem.html#
 https://pyomocontrib-simplemodel.readthedocs.io/en/latest/knapsack.html
 
 https://pythonhosted.org/PuLP/CaseStudies/a_sudoku_problem.html
+https://stackoverflow.com/questions/48733667/shortest-path-lp-formulation-reverse-links-taking-on-value-1
 #### Merkle trees 
 https://tryalgo.org/fr/2016/12/10/arbres-de-merkle/
 #### Branch and Bound

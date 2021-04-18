@@ -179,8 +179,8 @@ def set_log_level(args):
 def main():
     parser = argparse.ArgumentParser(description='print score',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('input_file_path', type=str, help='input file path e.g. a_example.in')
-    parser.add_argument('output_file_path', type=str, help='output file path e.g. a_example.out')
+    parser.add_argument('--input_file_path', type=str, help='input file path e.g. a_example.in')
+    parser.add_argument('--output_file_path', type=str, help='output file path e.g. a_example.out')
     parser.add_argument('--check', action='store_true', help='check output file')
     parser.add_argument('--abort', action='store_true', help='use with --check, abort on first error')
     parser.add_argument('--debug', action='store_true', help='for debug purpose')

@@ -6,34 +6,6 @@ import re
 from copy import copy
 
 
-######################################################################################
-
-
-######################################################################################
-
-
-defaultFile = "/home/darkloner99/code/Hashcode/Hashcode/2018-qualif/in/input2.in"
-OUTPUT_F = "/home/darkloner99/code/Hashcode/Hashcode/2018-qualif/out/results.txt"
-
-parser = argparse.ArgumentParser(description='Compute hashcode 2018 ride')
-parser.add_argument('-f','--file',help='Input file',default=defaultFile,type=str)
-parser.add_argument('-v','--verbose',default=-1,help='verbose mode',type=int)
-args = parser.parse_args()
-
-
-
-with open(args.file,"r") as f:
-    rowsN,columsN,vehiculesN,ridesN,bonusV,constantFee,distanceFee,steps =  [int(x) for x in f.readline().strip().split(" ")]
-    size = int(ridesN/0.4*vehiculesN)
-    ridesArr = []
-    for i in range(ridesN):
-        # xe,ye,xs,ys,st,end
-        ridesArr.append([int(x) for x in f.readline().strip().split(" ")] + [i])
-        
-if(args.verbose==0): print(ridesArr)
-
-
-
 
 def compute_upperbound(score,cabAvailableT,vx,vy,ridesArr:list,candidate):
     upperBound = score
@@ -151,6 +123,36 @@ def writeOut(carArr,SCORE):
             print(str(e),file=f,end=" ")
         print("",file=f)
                     
+
+
+######################################################################################
+
+
+######################################################################################
+
+
+defaultFile = "/home/darkloner99/code/Hashcode/Hashcode/2018-qualif/in/input2.in"
+OUTPUT_F = "/home/darkloner99/code/Hashcode/Hashcode/2018-qualif/out/results.txt"
+
+parser = argparse.ArgumentParser(description='Compute hashcode 2018 ride')
+parser.add_argument('-f','--file',help='Input file',default=defaultFile,type=str)
+parser.add_argument('-v','--verbose',default=-1,help='verbose mode',type=int)
+args = parser.parse_args()
+
+
+
+with open(args.file,"r") as f:
+    rowsN,columsN,vehiculesN,ridesN,bonusV,constantFee,distanceFee,steps =  [int(x) for x in f.readline().strip().split(" ")]
+    size = int(ridesN/0.4*vehiculesN)
+    ridesArr = []
+    for i in range(ridesN):
+        # xe,ye,xs,ys,st,end
+        ridesArr.append([int(x) for x in f.readline().strip().split(" ")] + [i])
+        
+if(args.verbose==0): print(ridesArr)
+
+
+
 #Ici faire une boucle pur chaque vehicule et supprimer les courses prises
 SCORE = 0
 carArr = []

@@ -9,7 +9,8 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "args": ["-c","6","C:\\Users\\antoi\\Documents\\GitHub\\hashcode\\scripts\\python-turtle-draw-svg\\dd17cb0f0e436fa60ace35306478a32d.png"]
         }
     ]
 }
